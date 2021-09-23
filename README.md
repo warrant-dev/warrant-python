@@ -2,6 +2,9 @@
 
 Use [Warrant](https://warrant.dev/) in Python projects.
 
+[![PyPI](https://img.shields.io/pypi/v/warrant-python)](https://pypi.org/project/warrant-python/)
+[![Discord](https://img.shields.io/discord/865661082203193365?label=discord)](https://discord.gg/QNCMKWzqET)
+
 ## Installation
 
 ```python
