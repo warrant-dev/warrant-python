@@ -1,7 +1,7 @@
 import requests
 import json
 
-__version__ = "0.2.0"
+__version__ = "0.2.1"
 
 API_ENDPOINT = "https://api.warrant.dev"
 API_VERSION = "/v1"
