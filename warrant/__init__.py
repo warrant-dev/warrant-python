@@ -40,6 +40,14 @@ class Warrant(object):
         json = self._make_post_request(uri="/users", json=payload)
         return json['userId']
 
+    def create_tenant(self, tenant_id=""):
+        if tenant_id == "":
+            payload = {}
+        else:
+            payload = { "tenantId": tenant_id }
+        json = self._make_post_request(uri="/tenants", json=payload)
+        return json['tenantId']
+
     def create_session(self, user_id):
         if user_id == "":
             raise WarrantException(msg="Invalid userId provided")
