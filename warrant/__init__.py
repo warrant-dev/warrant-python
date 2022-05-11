@@ -32,6 +32,14 @@ class Warrant(object):
         else:
             raise WarrantException(msg=resp.text, status_code=resp.status_code)
 
+    def _make_get_request(self, uri, params={}):
+        headers = { "Authorization": "ApiKey " + self._apiKey }
+        resp = requests.get(url = API_ENDPOINT+API_VERSION+uri, headers = headers, params = params)
+        if resp.status_code == 200:
+            return resp.json()
+        else:
+            raise WarrantException(msg=resp.text, status_code=resp.status_code)
+
     def create_user(self, user_id=""):
         if user_id == "":
             payload = {}
@@ -70,6 +78,16 @@ class Warrant(object):
             raise WarrantException(msg="Invalid type for \'user\'. Must be of type User or str")
         resp = self._make_post_request(uri="/warrants", json=payload)
         return resp['id']
+
+    def list_warrants(self, object_type="", object_id="", relation="", user_id=""):
+        filters = {
+            "objectType": object_type,
+            "objectId": object_id,
+            "relation": relation,
+            "userId": user_id,
+        }
+        resp = self._make_get_request(uri="/warrants", params=filters)
+        return resp
 
     def is_authorized(self, object_type, object_id, relation, user_to_check):
         if object_type == "" or object_id == "" or relation == "":

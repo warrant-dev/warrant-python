@@ -15,6 +15,7 @@ def make_warrant_requests(api_key):
     print(client.create_warrant(object_type="store", object_id="store1", relation="owner", user=new_user))
     is_authorized = client.is_authorized(object_type="store", object_id="store1", relation="owner", user_to_check=new_user)
     print(f"New user authorization result: {is_authorized}")
+    print(f"All warrants: {client.list_warrants()}")
 
 if __name__ == '__main__':
     # Replace with your Warrant api key
