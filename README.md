@@ -3,7 +3,7 @@
 Use [Warrant](https://warrant.dev/) in Python projects.
 
 [![PyPI](https://img.shields.io/pypi/v/warrant-python)](https://pypi.org/project/warrant-python/)
-[![Discord](https://img.shields.io/discord/865661082203193365?label=discord)](https://discord.gg/QNCMKWzqET)
+[![Slack](https://img.shields.io/badge/slack-join-brightgreen)](https://join.slack.com/t/warrantcommunity/shared_invite/zt-12g84updv-5l1pktJf2bI5WIKN4_~f4w)
 
 ## Installation
 
