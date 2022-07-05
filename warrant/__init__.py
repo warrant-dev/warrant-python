@@ -14,11 +14,10 @@ class WarrantException(Exception):
             message = f"Warrant error: {status_code} " + msg
         super().__init__(message)
 
-class User(object):
-    def __init__(self, object_type, object_id, relation):
+class Subject(object):
+    def __init__(self, object_type, object_id):
         self.objectType = object_type
         self.objectId = object_id
-        self.relation = relation
 
 class Warrant(object):
     def __init__(self, api_key):
@@ -62,7 +61,7 @@ class Warrant(object):
         json = self._make_post_request(uri="/users/"+user_id+"/sessions")
         return json['token']
 
-    def create_warrant(self, object_type, object_id, relation, user):
+    def create_warrant(self, object_type, object_id, relation, subject):
         if object_type == "" or object_id == "" or relation == "":
             raise WarrantException(msg="Invalid object_type, object_id and/or relation")
         payload = {
@@ -70,12 +69,10 @@ class Warrant(object):
             "objectId": object_id,
             "relation": relation
         }
-        if isinstance(user, str):
-            payload["user"] = { "userId": user }
-        elif isinstance(user, User):
-            payload["user"] = json.dumps(user.__dict__)
+        if isinstance(subject, Subject):
+            payload["subject"] = subject.__dict__
         else:
-            raise WarrantException(msg="Invalid type for \'user\'. Must be of type User or str")
+            raise WarrantException(msg="Invalid type for \'subject\'. Must be of type Subject")
         resp = self._make_post_request(uri="/warrants", json=payload)
         return resp['id']
 
@@ -89,7 +86,7 @@ class Warrant(object):
         resp = self._make_get_request(uri="/warrants", params=filters)
         return resp
 
-    def is_authorized(self, object_type, object_id, relation, user_to_check):
+    def is_authorized(self, object_type, object_id, relation, subject_to_check):
         if object_type == "" or object_id == "" or relation == "":
             raise WarrantException(msg="Invalid object_type, object_id and/or relation")
         payload = {
@@ -97,12 +94,10 @@ class Warrant(object):
             "objectId": object_id,
             "relation": relation
         }
-        if isinstance(user_to_check, str):
-            payload["user"] = { "userId": user_to_check }
-        elif isinstance(user_to_check, User):
-            payload["user"] = json.dumps(user_to_check.__dict__)
+        if isinstance(subject_to_check, Subject):
+            payload["subject"] = subject_to_check.__dict__
         else:
-            raise WarrantException(msg="Invalid type for \'user_to_check\'. Must be of type User or str")
+            raise WarrantException(msg="Invalid type for \'subject_to_check\'. Must be of type Subject")
         headers = { "Authorization": "ApiKey " + self._apiKey }
         resp = requests.post(url = API_ENDPOINT+API_VERSION+"/authorize", headers = headers, json=payload)
         if resp.status_code == 200:
