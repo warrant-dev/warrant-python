@@ -15,9 +15,10 @@ class WarrantException(Exception):
         super().__init__(message)
 
 class Subject(object):
-    def __init__(self, object_type, object_id):
+    def __init__(self, object_type, object_id, relation=""):
         self.objectType = object_type
         self.objectId = object_id
+        self.relation = relation
 
 class Warrant(object):
     def __init__(self, api_key):
