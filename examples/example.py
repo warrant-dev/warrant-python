@@ -1,23 +1,62 @@
 from warrant import *
 
 def make_warrant_requests(api_key):
-    client = Warrant(api_key)
+    client = WarrantClient(api_key)
 
-    # Create users and session tokens
-    print("Created tenant with provided id: " + client.create_tenant("custom_tenant_001"))
-    print("Created user with provided id: " + client.create_user("custom_user_001"))
-    new_user = client.create_user()
-    print("Created user with generated id: " + new_user)
-    new_subject = Subject("user", new_user)
-    print(client.create_warrant(object_type="tenant", object_id="custom_tenant_001", relation="member", subject=new_subject))
-    print("Created session token: " + client.create_session(new_user))
+    # Create users, tenants, roles, permissions
+    user1 = client.create_user()
+    print("Created user with generated id: " + user1)
+    provided_user_id = "custom_user_100"
+    user2 = client.create_user(provided_user_id)
+    print("Created user with provided id: " + user2)
+    print("Created session token for user " + user1 + ": " + client.create_session(user1))
+    print("Created session token for user " + user2 + ": " + client.create_session(user2))
+    tenant1 = client.create_tenant("custom_tenant_210")
+    print("Created tenant with provided id: " + tenant1)
+    admin_role = client.create_role("admin1")
+    print("Created role: " + admin_role)
+    permission1 = client.create_permission("create_report")
+    print("Created permission: " + permission1)
+    permission2 = client.create_permission("delete_report")
+    print("Created permission: " + permission2)
+    print("Assigned role " + client.assign_role_to_user(user1, admin_role) + " to user " + user1)
+    print("Assigned permission " + client.assign_permission_to_user(user1, permission1) + " to user " + user1)
+    print("Assigned permission " + client.assign_permission_to_role(admin_role, permission2) + " to role " + admin_role)
 
-    # Create and check warrants
-    print(client.create_warrant(object_type="store", object_id="store1", relation="owner", subject=new_subject))
-    subject_to_check = Subject("user", new_user)
-    is_authorized = client.is_authorized(object_type="store", object_id="store1", relation="owner", subject_to_check=subject_to_check)
-    print(f"New user authorization result: {is_authorized}")
-    print(f"All warrants: {client.list_warrants()}")
+    # Create and test warrants
+    user1_subject = Subject("user", user1)
+    print("--- Testing Warrants ---")
+    print(client.create_warrant(object_type="tenant", object_id=tenant1, relation="member", subject=user1_subject))
+    subject_to_check = Subject("user", user1)
+    warrants_to_check = [Warrant("tenant", tenant1, "member", subject_to_check)]
+    is_authorized = client.is_authorized(WarrantCheck(warrants_to_check, "allOf"))
+    print(f"Tenant check authorization result: {is_authorized}")
+    role_warrants_to_check = [Warrant("role", admin_role, "member", subject_to_check)]
+    role_check = client.is_authorized(WarrantCheck(role_warrants_to_check, "allOf"))
+    print(f"Admin role check authorization result: {role_check}")
+    permission_warrants_to_check = [Warrant("permission", permission1, "member", subject_to_check)]
+    permission_check = client.is_authorized(WarrantCheck(permission_warrants_to_check, "allOf"))
+    print(f"create_report permission check authorization result: {permission_check}")
+    role_subject = Subject("role", admin_role)
+    role_permission_warrants_to_check = [Warrant("permission", permission2, "parent", role_subject)]
+    role_permission_check = client.is_authorized(WarrantCheck(role_permission_warrants_to_check, "allOf"))
+    print(f"create_report role/permission check authorization result: {role_permission_check}")
+    print(f"List all warrants: {client.list_warrants()}")
+
+    # Delete users, tenants, roles, permissions
+    client.remove_permission_from_role(admin_role, permission2)
+    client.remove_permission_from_user(user1, permission1)
+    client.remove_role_from_user(user1, admin_role)
+    client.delete_user(user1)
+    print("Deleted user " + user1)
+    client.delete_user(user2)
+    print("Deleted user " + user2)
+    client.delete_tenant(tenant1)
+    print("Deleted tenant " + tenant1)
+    client.delete_role(admin_role)
+    print("Deleted role " + admin_role)
+    client.delete_permission(permission1)
+    print("Deleted permission " + permission1)
 
 if __name__ == '__main__':
     # Replace with your Warrant api key
