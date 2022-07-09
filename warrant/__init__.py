@@ -172,8 +172,6 @@ class WarrantClient(object):
         return resp
 
     def is_authorized(self, warrant_check):
-        if warrant_check.op != "anyOf" and warrant_check.op != "allOf":
-            raise WarrantException(msg="Invalid warrant check op")
         if not isinstance(warrant_check.warrants, list):
             raise WarrantException(msg="Invalid list of warrants to check")
         payload = json.dumps(warrant_check, default = lambda x: x.__dict__)
