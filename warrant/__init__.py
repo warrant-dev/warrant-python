@@ -143,7 +143,11 @@ class WarrantClient(object):
     def create_session(self, user_id):
         if user_id == "":
             raise WarrantException(msg="Invalid userId provided")
-        json = self._make_post_request(uri="/v1/users/"+user_id+"/sessions")
+        payload = {
+            "type": "sess",
+            "userId": user_id
+        }
+        json = self._make_post_request(uri="/v1/sessions", json=payload)
         return json['token']
 
     def create_warrant(self, object_type, object_id, relation, subject):
