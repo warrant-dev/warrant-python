@@ -32,6 +32,11 @@ class WarrantCheck(object):
         self.warrants = warrants
         self.op = op
 
+class PermissionCheck(object):
+    def __init__(self, permission_id, user_id):
+        self.permission_id = permission_id
+        self.user_id = user_id
+
 class WarrantClient(object):
     def __init__(self, api_key):
         self._apiKey = api_key
@@ -200,3 +205,16 @@ class WarrantClient(object):
             return True
         else:
             return False
+
+    def has_permission(self, permission_check):
+        return self.is_authorized({
+            warrants: [{
+                objectType: "permission",
+                objectId: permission_check.permission_id,
+                relation: "member",
+                subject: {
+                    objectType: "user",
+                    objectId: permission_check.user_id
+                }
+            }]
+        })
