@@ -4,6 +4,7 @@ import json
 __version__ = "0.2.1"
 
 API_ENDPOINT = "https://api.warrant.dev"
+SELF_SERVICE_DASHBOARD_BASE_URL = "https://self-serve.warrant.dev"
 
 class WarrantException(Exception):
     def __init__(self, msg, status_code=-1):
@@ -140,15 +141,25 @@ class WarrantClient(object):
             raise WarrantException(msg="Must include a roleId and permissionId")
         self._make_delete_request(uri="/v1/roles/"+role_id+"/permissions/"+permission_id)
 
-    def create_session(self, user_id):
-        if user_id == "":
+    def create_authorization_session(self, session):
+        if session.user_id == "":
             raise WarrantException(msg="Invalid userId provided")
-        payload = {
-            "type": "sess",
-            "userId": user_id
-        }
-        json = self._make_post_request(uri="/v1/sessions", json=payload)
+        if session.type != "sess":
+            raise WarrantException(msg="Invalid type provided")
+        if redirect_url == "":
+            raise WarrantException(msg="Must include a redirect_url")
+        json = self._make_post_request(uri="/v1/sessions", json=session)
         return json['token']
+
+    def create_self_service_session(self, session, redirect_url):
+        if session.tenant_id == "":
+            raise WarrantException(msg="Invalid tenant_id provided")
+        if session.user_id == "":
+            raise WarrantException(msg="Invalid user_id provided")
+        if session.type != "ssdash":
+            raise WarrantException(msg="Invalid type provided")
+        json = self._make_post_request(uri="/v1/sessions", json=session)
+        return f"{SELF_SERVICE_DASHBOARD_BASE_URL}/{json['token']}?redirectUrl={redirect_url}"
 
     def create_warrant(self, object_type, object_id, relation, subject):
         if object_type == "" or object_id == "" or relation == "":
