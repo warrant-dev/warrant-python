@@ -63,7 +63,7 @@ class WarrantClient(object):
         else:
             payload = { "userId": user_id }
         if email != "":
-            payloay.update({ "email": email })
+            payload.update({ "email": email })
         json = self._make_post_request(uri="/v1/users", json=payload)
         return json['userId']
 
