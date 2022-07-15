@@ -57,11 +57,13 @@ class WarrantClient(object):
         if resp.status_code != 200:
             raise WarrantException(msg=resp.text, status_code=resp.status_code)
 
-    def create_user(self, user_id=""):
+    def create_user(self, user_id="", email=""):
         if user_id == "":
             payload = {}
         else:
             payload = { "userId": user_id }
+        if email != "":
+            payloay.update({ "email": email })
         json = self._make_post_request(uri="/v1/users", json=payload)
         return json['userId']
 
@@ -70,11 +72,13 @@ class WarrantClient(object):
             raise WarrantException(msg="Must include a userId")
         self._make_delete_request(uri="/v1/users/"+user_id)
 
-    def create_tenant(self, tenant_id=""):
+    def create_tenant(self, tenant_id="", name=""):
         if tenant_id == "":
             payload = {}
         else:
             payload = { "tenantId": tenant_id }
+        if name != "":
+            payload.update({ "name": name })
         json = self._make_post_request(uri="/v1/tenants", json=payload)
         return json['tenantId']
 
