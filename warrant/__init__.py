@@ -16,14 +16,14 @@ class WarrantException(Exception):
 
 class Subject(object):
     def __init__(self, object_type, object_id, relation=""):
-        self.objectType = object_type
-        self.objectId = object_id
+        self.object_type = object_type
+        self.object_id = object_id
         self.relation = relation
 
 class Warrant(object):
     def __init__(self, object_type, object_id, relation, subject):
-        self.objectType = object_type
-        self.objectId = object_id
+        self.object_type = object_type
+        self.object_id = object_id
         self.relation = relation
         self.subject = subject
 
@@ -37,12 +37,23 @@ class PermissionCheck(object):
         self.permission_id = permission_id
         self.user_id = user_id
 
+class AuthorizationSession(object):
+    def __init__(self, user_id):
+        self.type = "sess"
+        self.user_id = user_id
+
+class SelfServiceSession(object):
+    def __init__(self, user_id, tenant_id):
+        self.type = "ssdash"
+        self.user_id = user_id
+        self.tenant_id = tenant_id
+
 class WarrantClient(object):
     def __init__(self, api_key):
-        self._apiKey = api_key
+        self._api_key = api_key
 
     def _make_post_request(self, uri, json={}):
-        headers = { "Authorization": "ApiKey " + self._apiKey }
+        headers = { "Authorization": "ApiKey " + self._api_key }
         resp = requests.post(url = API_ENDPOINT+uri, headers = headers, json = json)
         if resp.status_code == 200:
             return resp.json()
@@ -50,7 +61,7 @@ class WarrantClient(object):
             raise WarrantException(msg=resp.text, status_code=resp.status_code)
 
     def _make_get_request(self, uri, params={}):
-        headers = { "Authorization": "ApiKey " + self._apiKey }
+        headers = { "Authorization": "ApiKey " + self._api_key }
         resp = requests.get(url = API_ENDPOINT+uri, headers = headers, params = params)
         if resp.status_code == 200:
             return resp.json()
@@ -58,7 +69,7 @@ class WarrantClient(object):
             raise WarrantException(msg=resp.text, status_code=resp.status_code)
 
     def _make_delete_request(self, uri, params={}):
-        headers = { "Authorization": "ApiKey " + self._apiKey }
+        headers = { "Authorization": "ApiKey " + self._api_key }
         resp = requests.delete(url = API_ENDPOINT+uri, headers = headers, params = params)
         if resp.status_code != 200:
             raise WarrantException(msg=resp.text, status_code=resp.status_code)
@@ -75,7 +86,7 @@ class WarrantClient(object):
 
     def delete_user(self, user_id):
         if user_id == "":
-            raise WarrantException(msg="Must include a userId")
+            raise WarrantException(msg="Must include a user_id")
         self._make_delete_request(uri="/v1/users/"+user_id)
 
     def create_tenant(self, tenant_id="", name=""):
@@ -130,60 +141,66 @@ class WarrantClient(object):
 
     def assign_permission_to_user(self, user_id, permission_id):
         if user_id == "" or permission_id == "":
-            raise WarrantException(msg="Must include a userId and permissionId")
+            raise WarrantException(msg="Must include a user_id and permission_id")
         json = self._make_post_request(uri="/v1/users/" + user_id + "/permissions/" + permission_id)
         return json['permissionId']
 
     def remove_permission_from_user(self, user_id, permission_id):
         if user_id == "" or permission_id == "":
-            raise WarrantException(msg="Must include a userId and permissionId")
+            raise WarrantException(msg="Must include a user_id and permission_id")
         self._make_delete_request(uri="/v1/users/"+user_id+"/permissions/"+permission_id)
 
     def assign_permission_to_role(self, role_id, permission_id):
         if role_id == "" or permission_id == "":
-            raise WarrantException(msg="Must include a roleId and permissionId")
+            raise WarrantException(msg="Must include a role_id and permission_id")
         json = self._make_post_request(uri="/v1/roles/" + role_id + "/permissions/" + permission_id)
         return json['permissionId']
 
     def remove_permission_from_role(self, role_id, permission_id):
         if role_id == "" or permission_id == "":
-            raise WarrantException(msg="Must include a roleId and permissionId")
+            raise WarrantException(msg="Must include a role_id and permission_id")
         self._make_delete_request(uri="/v1/roles/"+role_id+"/permissions/"+permission_id)
 
     def create_authorization_session(self, session):
         if session.user_id == "":
-            raise WarrantException(msg="Invalid userId provided")
+            raise WarrantException(msg="Must include a user_id")
         if session.type != "sess":
             raise WarrantException(msg="Invalid type provided")
-        if redirect_url == "":
-            raise WarrantException(msg="Must include a redirect_url")
-        json = self._make_post_request(uri="/v1/sessions", json=session)
+        payload = { "type": session.type, "userId": session.user_id }
+        json = self._make_post_request(uri="/v1/sessions", json=payload)
         return json['token']
 
     def create_self_service_session(self, session, redirect_url):
         if session.tenant_id == "":
-            raise WarrantException(msg="Invalid tenant_id provided")
+            raise WarrantException(msg="Must include a tenant_id")
         if session.user_id == "":
-            raise WarrantException(msg="Invalid user_id provided")
+            raise WarrantException(msg="Must include a user_id")
         if session.type != "ssdash":
             raise WarrantException(msg="Invalid type provided")
-        json = self._make_post_request(uri="/v1/sessions", json=session)
+        if redirect_url == "":
+            raise WarrantException(msg="Must include a redirect_url")
+        payload = { "type": session.type, "userId": session.user_id, "tenantId": session.tenant_id }
+        json = self._make_post_request(uri="/v1/sessions", json=payload)
         return f"{SELF_SERVICE_DASHBOARD_BASE_URL}/{json['token']}?redirectUrl={redirect_url}"
 
     def create_warrant(self, object_type, object_id, relation, subject):
         if object_type == "" or object_id == "" or relation == "":
-            raise WarrantException(msg="Invalid object_type, object_id and/or relation")
+            raise WarrantException(msg="Must provide object_type, object_id, and relation")
         payload = {
             "objectType": object_type,
             "objectId": object_id,
             "relation": relation
         }
         if isinstance(subject, Subject):
-            payload["subject"] = subject.__dict__
+            payload["subject"] = {
+                "objectType": subject.object_type,
+                "objectId": subject.object_id,
+                "relation": subject.relation
+            }
         else:
             raise WarrantException(msg="Invalid type for \'subject\'. Must be of type Subject")
         resp = self._make_post_request(uri="/v1/warrants", json=payload)
-        return resp['id']
+        return resp
 
     def list_warrants(self, object_type="", object_id="", relation="", user_id=""):
         filters = {
@@ -197,10 +214,22 @@ class WarrantClient(object):
 
     def is_authorized(self, warrant_check):
         if not isinstance(warrant_check.warrants, list):
-            raise WarrantException(msg="Invalid list of warrants to check")
-        payload = json.dumps(warrant_check, default = lambda x: x.__dict__)
-        headers = { "Authorization": "ApiKey " + self._apiKey }
-        resp = requests.post(url = API_ENDPOINT+"/v2/authorize", headers = headers, data=payload)
+            raise WarrantException(msg="Must provide a list of warrants")
+        payload = {
+            "op": warrant_check.op,
+            "warrants": list(map(lambda wnt: {
+                "objectType": wnt.object_type,
+                "objectId": wnt.object_id,
+                "relation": wnt.relation,
+                "subject": {
+                    "objectType": wnt.subject.object_type,
+                    "objectId": wnt.subject.object_id,
+                    "relation": wnt.subject.relation
+                }
+            }, warrant_check.warrants))
+        }
+        headers = { "Authorization": "ApiKey " + self._api_key }
+        resp = requests.post(url=API_ENDPOINT+"/v2/authorize", headers=headers, json=payload)
         if resp.status_code != 200:
             raise WarrantException(msg=resp.text, status_code=resp.status_code)
         response_payload = resp.json()
@@ -213,12 +242,12 @@ class WarrantClient(object):
     def has_permission(self, permission_check):
         return self.is_authorized({
             warrants: [{
-                objectType: "permission",
-                objectId: permission_check.permission_id,
+                object_type: "permission",
+                object_id: permission_check.permission_id,
                 relation: "member",
                 subject: {
-                    objectType: "user",
-                    objectId: permission_check.user_id
+                    object_type: "user",
+                    object_id: permission_check.user_id
                 }
             }]
         })
