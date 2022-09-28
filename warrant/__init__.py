@@ -1,7 +1,7 @@
 import requests
 import json
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 API_ENDPOINT = "https://api.warrant.dev"
 SELF_SERVICE_DASHBOARD_BASE_URL = "https://self-serve.warrant.dev"
