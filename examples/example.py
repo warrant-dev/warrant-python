@@ -9,11 +9,8 @@ def make_warrant_requests(api_key):
     provided_user_id = "custom_user_100"
     user2 = client.create_user(provided_user_id)
     print("Created user with provided id: " + user2)
-    print("Created authorization session token for user " + user1 + ": " + client.create_authorization_session({type:"sess", user_id:user1}))
-    print("Created authorization session token for user " + user2 + ": " + client.create_authorization_session({type:"sess", user_id:user2}))
     tenant1 = client.create_tenant("custom_tenant_210")
     print("Created tenant with provided id: " + tenant1)
-    print("Created self service session for user " + user2 + ": " + client.create_self_service_session({type:"ssdash", user_id:user2, tenant_id: tenant1}, "http://example.com"))
     admin_role = client.create_role("admin1")
     print("Created role: " + admin_role)
     permission1 = client.create_permission("create_report")
@@ -23,6 +20,10 @@ def make_warrant_requests(api_key):
     print("Assigned role " + client.assign_role_to_user(user1, admin_role) + " to user " + user1)
     print("Assigned permission " + client.assign_permission_to_user(user1, permission1) + " to user " + user1)
     print("Assigned permission " + client.assign_permission_to_role(admin_role, permission2) + " to role " + admin_role)
+    print("Created authorization session token for user " + user1 + ": " + client.create_authorization_session(AuthorizationSession(user_id=user1)))
+    print("Created authorization session token for user " + user2 + ": " + client.create_authorization_session(AuthorizationSession(user_id=user2)))
+    print("Assigned permission " + client.assign_permission_to_user(user2, "view-self-service-dashboard") + " to user " + user2)
+    print("Created self service session for user " + user2 + ": " + client.create_self_service_session(SelfServiceSession(user_id=user2, tenant_id=tenant1), "http://example.com"))
 
     # Create and test warrants
     user1_subject = Subject("user", user1)
