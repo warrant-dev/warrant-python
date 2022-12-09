@@ -59,6 +59,8 @@ def make_warrant_requests(api_key):
     print("Deleted role " + admin_role)
     client.delete_permission(permission1)
     print("Deleted permission " + permission1)
+    client.delete_permission(permission2)
+    print("Deleted permission " + permission2)
 
 if __name__ == '__main__':
     # Replace with your Warrant api key
