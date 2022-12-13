@@ -45,6 +45,9 @@ def make_warrant_requests(api_key):
     print(f"create_report role/permission check authorization result: {role_permission_check}")
     print(f"List all warrants: {client.list_warrants()}")
 
+    # Query all warrants for user1
+    print(f"List all warrants for user1: {client.query_warrants(user1_subject)}")
+
     # Delete users, tenants, roles, permissions
     client.remove_permission_from_role(admin_role, permission2)
     client.remove_permission_from_user(user1, permission1)
@@ -59,6 +62,8 @@ def make_warrant_requests(api_key):
     print("Deleted role " + admin_role)
     client.delete_permission(permission1)
     print("Deleted permission " + permission1)
+    client.delete_permission(permission2)
+    print("Deleted permission " + permission2)
 
 if __name__ == '__main__':
     # Replace with your Warrant api key

@@ -212,6 +212,18 @@ class WarrantClient(object):
         resp = self._make_get_request(uri="/v1/warrants", params=filters)
         return resp
 
+    def query_warrants(self, subject, object_type="", relation=""):
+        if not isinstance(subject, Subject):
+            raise WarrantException(msg="Subject must be of type Subject")
+        subject_param = subject.object_type + ":" + subject.object_id
+        params = {
+            "objectType": object_type,
+            "relation": relation,
+            "subject": subject_param,
+        }
+        resp = self._make_get_request(uri="/v1/query", params=params)
+        return resp
+
     def is_authorized(self, warrant_check):
         if not isinstance(warrant_check.warrants, list):
             raise WarrantException(msg="Must provide a list of warrants")
