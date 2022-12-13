@@ -213,10 +213,13 @@ class WarrantClient(object):
         return resp
 
     def query_warrants(self, subject, object_type="", relation=""):
+        if not isinstance(subject, Subject):
+            raise WarrantException(msg="Subject must be of type Subject")
+        subject_param = subject.object_type + ":" + subject.object_id
         params = {
             "objectType": object_type,
             "relation": relation,
-            "subject": subject,
+            "subject": subject_param,
         }
         resp = self._make_get_request(uri="/v1/query", params=params)
         return resp
