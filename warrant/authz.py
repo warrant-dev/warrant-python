@@ -1,6 +1,7 @@
 import warrant
 from warrant import APIResource
 
+
 class Authz(APIResource):
 
     @classmethod

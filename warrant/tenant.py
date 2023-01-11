@@ -1,5 +1,6 @@
 from warrant import APIResource, PricingTier, Feature, User, Authz, Subject
 
+
 class Tenant(APIResource):
 
     def __init__(self, id, name):
@@ -81,4 +82,4 @@ class Tenant(APIResource):
     """
     @staticmethod
     def from_json(obj):
-      return Tenant(obj["tenantId"], obj["name"])
+        return Tenant(obj["tenantId"], obj["name"])

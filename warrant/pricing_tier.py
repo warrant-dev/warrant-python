@@ -1,5 +1,6 @@
 from warrant import APIResource, Feature
 
+
 class PricingTier(APIResource):
 
     def __init__(self, id):
@@ -71,4 +72,4 @@ class PricingTier(APIResource):
     """
     @staticmethod
     def _from_json(obj):
-      return PricingTier(obj["pricingTierId"])
+        return PricingTier(obj["pricingTierId"])

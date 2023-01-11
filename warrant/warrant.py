@@ -1,5 +1,6 @@
 from warrant import APIResource, WarrantException
 
+
 class Subject(object):
     def __init__(self, object_type, object_id, relation=""):
         self.object_type = object_type
@@ -15,6 +16,7 @@ class Subject(object):
         if "relation" in obj.keys():
             relation = obj["relation"]
         return Subject(obj["objectType"], obj["objectId"], relation)
+
 
 class Warrant(APIResource):
 

@@ -1,5 +1,6 @@
 from warrant import APIResource
 
+
 class Feature(APIResource):
 
     def __init__(self, id):
@@ -74,4 +75,4 @@ class Feature(APIResource):
     """
     @staticmethod
     def from_json(obj):
-      return Feature(obj["featureId"])
+        return Feature(obj["featureId"])

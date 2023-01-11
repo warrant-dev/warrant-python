@@ -1,4 +1,6 @@
-import requests, warrant
+import requests
+import warrant
+
 
 class WarrantException(Exception):
     def __init__(self, msg, status_code=-1):
@@ -7,6 +9,7 @@ class WarrantException(Exception):
         else:
             message = f"Warrant error: {status_code} " + msg
         super().__init__(message)
+
 
 class APIResource(object):
 

@@ -1,5 +1,6 @@
 from warrant import APIResource, Permission
 
+
 class Role(APIResource):
 
     def __init__(self, id, name, description):
@@ -69,4 +70,4 @@ class Role(APIResource):
     """
     @staticmethod
     def from_json(obj):
-      return Role(obj["roleId"], obj["name"], obj["description"])
+        return Role(obj["roleId"], obj["name"], obj["description"])
