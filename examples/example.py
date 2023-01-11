@@ -1,71 +1,212 @@
-from warrant import *
+import warrant
 
-def make_warrant_requests(api_key):
-    client = WarrantClient(api_key)
+"""
+Common usage examples for:
+- Users
+- Tenants
+- Roles, Permissions (RBAC)
+- Pricing Tiers, Features
+"""
 
-    # Create users, tenants, roles, permissions
-    user1 = client.create_user()
-    print("Created user with generated id: " + user1)
-    provided_user_id = "custom_user_100"
-    user2 = client.create_user(provided_user_id)
-    print("Created user with provided id: " + user2)
-    tenant1 = client.create_tenant("custom_tenant_210")
-    print("Created tenant with provided id: " + tenant1)
-    admin_role = client.create_role("admin1")
-    print("Created role: " + admin_role)
-    permission1 = client.create_permission("create_report")
-    print("Created permission: " + permission1)
-    permission2 = client.create_permission("delete_report")
-    print("Created permission: " + permission2)
-    print("Assigned role " + client.assign_role_to_user(user1, admin_role) + " to user " + user1)
-    print("Assigned permission " + client.assign_permission_to_user(user1, permission1) + " to user " + user1)
-    print("Assigned permission " + client.assign_permission_to_role(admin_role, permission2) + " to role " + admin_role)
-    print("Created authorization session token for user " + user1 + ": " + client.create_authorization_session(AuthorizationSession(user_id=user1)))
-    print("Created authorization session token for user " + user2 + ": " + client.create_authorization_session(AuthorizationSession(user_id=user2)))
-    print("Assigned permission " + client.assign_permission_to_user(user2, "view-self-service-dashboard") + " to user " + user2)
-    print("Created self service session for user " + user2 + ": " + client.create_self_service_session(SelfServiceSession(user_id=user2, tenant_id=tenant1), "http://example.com"))
+# Replace with your own API key to run example
+warrant.api_key = "YOUR_KEY"
 
-    # Create and test warrants
-    user1_subject = Subject("user", user1)
-    print("--- Testing Warrants ---")
-    print(client.create_warrant(object_type="tenant", object_id=tenant1, relation="member", subject=user1_subject))
-    subject_to_check = Subject("user", user1)
-    warrants_to_check = [Warrant("tenant", tenant1, "member", subject_to_check)]
-    is_authorized = client.is_authorized(WarrantCheck(warrants_to_check, "allOf"))
-    print(f"Tenant check authorization result: {is_authorized}")
-    role_warrants_to_check = [Warrant("role", admin_role, "member", subject_to_check)]
-    role_check = client.is_authorized(WarrantCheck(role_warrants_to_check, "allOf"))
-    print(f"Admin role check authorization result: {role_check}")
-    permission_warrants_to_check = [Warrant("permission", permission1, "member", subject_to_check)]
-    permission_check = client.is_authorized(WarrantCheck(permission_warrants_to_check, "allOf"))
-    print(f"create_report permission check authorization result: {permission_check}")
-    role_subject = Subject("role", admin_role)
-    role_permission_warrants_to_check = [Warrant("permission", permission2, "parent", role_subject)]
-    role_permission_check = client.is_authorized(WarrantCheck(role_permission_warrants_to_check, "allOf"))
-    print(f"create_report role/permission check authorization result: {role_permission_check}")
-    print(f"List all warrants: {client.list_warrants()}")
+"""
+Users & Tenants
+"""
+# Create some users
+print("---------- Users & Tenants ----------")
+user1 = warrant.User.create()
+user2 = warrant.User.create(id="custom_user_id_1")
+print(f"Created users: [{user1.id}, {user2.id}]")
 
-    # Query all warrants for user1
-    print(f"List all warrants for user1: {client.query_warrants(user1_subject)}")
+# Create tenants & assign the users to them (multitenancy)
+tenant1 = warrant.Tenant.create(id="dunder_mifflin")
+tenant2 = warrant.Tenant.create(id="big_box_paper")
+print(f"Created tenants: [{tenant1.id}, {tenant2.id}]")
+tenant1.assign_user(user1.id)
+print(f"Assigned user [{user1.id}] to tenant [{tenant1.id}]")
+tenant2.assign_user(user2.id)
+print(f"Assigned user [{user2.id}] to tenant [{tenant2.id}]")
+tenant1_users = ""
+for u in tenant1.list_users():
+    tenant1_users += u.id + " "
+print(f"Verify users for [{tenant1.id}]: [{tenant1_users}]")
+tenant2_users = ""
+for u in tenant2.list_users():
+    tenant2_users += u.id + " "
+print(f"Verify users for [{tenant2.id}]: [{tenant2_users}]")
+print("\n")
 
-    # Delete users, tenants, roles, permissions
-    client.remove_permission_from_role(admin_role, permission2)
-    client.remove_permission_from_user(user1, permission1)
-    client.remove_role_from_user(user1, admin_role)
-    client.delete_user(user1)
-    print("Deleted user " + user1)
-    client.delete_user(user2)
-    print("Deleted user " + user2)
-    client.delete_tenant(tenant1)
-    print("Deleted tenant " + tenant1)
-    client.delete_role(admin_role)
-    print("Deleted role " + admin_role)
-    client.delete_permission(permission1)
-    print("Deleted permission " + permission1)
-    client.delete_permission(permission2)
-    print("Deleted permission " + permission2)
 
-if __name__ == '__main__':
-    # Replace with your Warrant api key
-    api_key = "API_KEY"
-    make_warrant_requests(api_key)
+"""
+Roles & Permissions (Role Based Access Control)
+"""
+# Create roles
+print("---------- Role Based Access Control ----------")
+admin_role = warrant.Role.create(id="admin1")
+viewer_role = warrant.Role.create(id="viewer")
+print(f"Created roles: [{admin_role.id}, {viewer_role.id}]")
+
+# Create permissions
+create_report_perm = warrant.Permission.create(id="create_report")
+delete_report_perm = warrant.Permission.create(id="delete_report")
+view_report_perm = warrant.Permission.create(id="view_report")
+special_perm = warrant.Permission.create(id="special_perm")
+print(f"Created permissions: [{create_report_perm.id}, {delete_report_perm.id}, {view_report_perm.id}, {special_perm.id}]")
+
+# Assign permissions to roles:
+# 'create_report', 'delete_report', 'view_report' -> 'admin' role
+# 'view_report' -> 'viewer' role
+admin_role.assign_permission(create_report_perm.id)
+admin_role.assign_permission(delete_report_perm.id)
+admin_role.assign_permission(view_report_perm.id)
+admin_role_perms = ""
+for p in admin_role.list_permissions():
+    admin_role_perms += p.id + " "
+print(f"Assigned permissions to [{admin_role.id}] role: [{admin_role_perms}]")
+viewer_role.assign_permission(view_report_perm.id)
+viewer_role_perms = ""
+for p in viewer_role.list_permissions():
+    viewer_role_perms += p.id + " "
+print(f"Assigned permissions to [{viewer_role.id}] role: [{viewer_role_perms}]")
+
+# Assign roles & permissions to users:
+# 'admin' role and 'special_perm' permission -> 'user1'
+# 'viewer' role -> 'user2'
+user1.assign_role(admin_role.id)
+print(f"Assigned role [{admin_role.id}] to user [{user1.id}]")
+user1.assign_permission(special_perm.id)
+print(f"Assigned permission [{special_perm.id}] to user [{user1.id}]")
+user2.assign_role(viewer_role.id)
+print(f"Assigned role [{viewer_role.id}] to user [{user2.id}]")
+
+# RBAC checks
+print(f"Does user [{user1.id}] have the [{create_report_perm.id}] permission? (should be true) -> {user1.has_permission(create_report_perm.id)}")
+print(f"Does user [{user1.id}] have the [{delete_report_perm.id}] permission? (should be true) -> {user1.has_permission(delete_report_perm.id)}")
+print(f"Does user [{user1.id}] have the [{view_report_perm.id}] permission? (should be true) -> {user1.has_permission(view_report_perm.id)}")
+print(f"Does user [{user1.id}] have the [{special_perm.id}] permission? (should be true) -> {user1.has_permission(special_perm.id)}")
+
+print(f"Does user [{user2.id}] have the [{create_report_perm.id}] permission? (should be false) -> {user2.has_permission(create_report_perm.id)}")
+print(f"Does user [{user2.id}] have the [{delete_report_perm.id}] permission? (should be false) -> {user2.has_permission(delete_report_perm.id)}")
+print(f"Does user [{user2.id}] have the [{view_report_perm.id}] permission? (should be true) -> {user2.has_permission(view_report_perm.id)}")
+print(f"Does user [{user2.id}] have the [{special_perm.id}] permission? (should be false) -> {user2.has_permission(special_perm.id)}")
+print("\n")
+
+
+"""
+Pricing Tiers & Features
+"""
+# Create pricing tiers
+print("---------- Pricing Tiers & Features ----------")
+enterprise_tier = warrant.PricingTier.create("enterprise")
+free_tier = warrant.PricingTier.create("free")
+print(f"Created pricing tiers: [{enterprise_tier.id}, {free_tier.id}]")
+
+# Create features
+analytics_feature = warrant.Feature.create("analytics")
+dashboard_feature = warrant.Feature.create("dashboard")
+print(f"Created features: [{analytics_feature.id}, {dashboard_feature.id}]")
+
+# Assign features to pricing tiers:
+# 'analytics' feature -> 'enterprise' tier
+# 'dashboard' feature -> 'free' tier
+enterprise_tier.assign_feature(analytics_feature.id)
+enterprise_tier_features = ""
+for f in enterprise_tier.list_features():
+    enterprise_tier_features += f.id + " "
+print(f"Assigned features to [{enterprise_tier.id}] tier: [{enterprise_tier_features}]")
+free_tier.assign_feature(dashboard_feature.id)
+free_tier_features = ""
+for f in free_tier.list_features():
+    free_tier_features += f.id + " "
+print(f"Assigned features to [{free_tier.id}] tier: [{free_tier_features}]")
+
+# Assign tiers to users:
+# 'enterprise' tier -> 'user1'
+# 'free' tier -> 'user2'
+user1.assign_pricing_tier(enterprise_tier.id)
+print(f"Assigned tier [{enterprise_tier.id}] to user [{user1.id}]")
+user2.assign_pricing_tier(free_tier.id)
+print(f"Assigned tier [{free_tier.id}] to user [{user2.id}]")
+
+# Pricing tiers checks
+print(f"Does [{user1.id}] have access to the [{analytics_feature.id}] feature? (should be true) -> {user1.has_feature(analytics_feature.id)}")
+print(f"Does [{user1.id}] have access to the [{dashboard_feature.id}] feature? (should be false) -> {user1.has_feature(dashboard_feature.id)}")
+print(f"Does [{user2.id}] have access to the [{analytics_feature.id}] feature? (should be false) -> {user2.has_feature(analytics_feature.id)}")
+print(f"Does [{user2.id}] have access to the [{dashboard_feature.id}] feature? (should be true) -> {user2.has_feature(dashboard_feature.id)}")
+print("\n")
+
+
+"""
+Create authz sessions (for FE use)
+"""
+# Generate a self-service dashboard url for user2
+print("---------- FE & Self-service Authz Tokens ----------")
+user2.assign_permission("view-self-service-dashboard")
+print("Created self service dashboard url for user [" + user2.id + "]: " + warrant.Authz.create_self_service_url(tenant_id=tenant1.id, user_id=user2.id, redirect_url="http://example.com"))
+
+# Authz sessions
+print("Created authorization session token for user [" + user1.id + "]: " + warrant.Authz.create_authorization_session(user_id=user1.id))
+print("Created authorization session token for user [" + user2.id + "]: " + warrant.Authz.create_authorization_session(user_id=user2.id))
+print("\n")
+
+
+"""
+Create and query your own warrants
+"""
+print("---------- Create & Query Warrants ----------")
+user1_subject = warrant.Subject("user", user1.id)
+result = warrant.Authz.check("permission", "view-self-service-dashboard", "member", user1_subject)
+print(f"Does [{user1.id}] have the [view-self-service-dashboard] permission? (should be false) -> {result}")
+warrant.Warrant.create("permission", "view-self-service-dashboard", "member", user1_subject)
+print("Manually assigned [view-self-service-dashboard] permission to [" + user1.id + "]")
+result = warrant.Authz.check("permission", "view-self-service-dashboard", "member", user1_subject)
+print(f"Does [{user1.id}] have the [view-self-service-dashboard] permission? (should be true) -> {result}")
+
+# Query warrants
+warrants = warrant.Warrant.query(select="explicit warrants", for_clause="subject=user:"+user1.id, where="relation=member")
+print("Query warrants results:")
+for w in warrants:
+    print(f"[{w.object_type}:{w.object_id} {w.relation} {w.subject.object_type}:{w.subject.object_id}]")
+
+warrant.Warrant.delete("permission", "view-self-service-dashboard", "member", user1_subject)
+print("Manually removed [view-self-service-dashboard] permission from [" + user1.id + "]")
+result = warrant.Authz.check("permission", "view-self-service-dashboard", "member", user1_subject)
+print(f"Does [{user1.id}] have the [view-self-service-dashboard] permission? (should be false) -> {result}")
+print("\n")
+
+
+"""
+Cleanup
+"""
+# Remove associations (not explicitly required if deleting objects, shown for completeness)
+print("Cleaning up...")
+user1.remove_permission(special_perm.id)
+user1.remove_role(admin_role.id)
+user2.remove_role(viewer_role.id)
+user2.remove_permission("view-self-service-dashboard")
+admin_role.remove_permission(create_report_perm.id)
+admin_role.remove_permission(delete_report_perm.id)
+admin_role.remove_permission(view_report_perm.id)
+viewer_role.remove_permission(view_report_perm.id)
+tenant1.remove_user(user1.id)
+tenant2.remove_user(user2.id)
+enterprise_tier.remove_feature(analytics_feature.id)
+free_tier.remove_feature(dashboard_feature.id)
+
+warrant.User.delete(user1.id)
+warrant.User.delete(user2.id)
+warrant.Tenant.delete(tenant1.id)
+warrant.Tenant.delete(tenant2.id)
+warrant.Role.delete(admin_role.id)
+warrant.Role.delete(viewer_role.id)
+warrant.Permission.delete(create_report_perm.id)
+warrant.Permission.delete(delete_report_perm.id)
+warrant.Permission.delete(view_report_perm.id)
+warrant.Permission.delete(special_perm.id)
+warrant.Feature.delete(analytics_feature.id)
+warrant.Feature.delete(dashboard_feature.id)
+warrant.PricingTier.delete(enterprise_tier.id)
+warrant.PricingTier.delete(free_tier.id)
+print("Done")
