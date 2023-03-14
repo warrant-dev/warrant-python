@@ -1,4 +1,4 @@
-from warrant import APIResource, Feature
+from warrant import APIResource, Feature, Subject, Warrant
 
 
 class PricingTier(APIResource):
@@ -46,11 +46,13 @@ class PricingTier(APIResource):
 
     @classmethod
     def assign_to_tenant(cls, tenant_id, pricing_tier_id):
-        cls._post(uri="/v1/tenants/"+tenant_id+"/pricing-tiers/"+pricing_tier_id)
+        tenant_subject = Subject("tenant", tenant_id)
+        return Warrant.create("pricing-tier", pricing_tier_id, "member", tenant_subject)
 
     @classmethod
     def remove_from_tenant(cls, tenant_id, pricing_tier_id):
-        cls._delete(uri="/v1/tenants/"+tenant_id+"/pricing-tiers/"+pricing_tier_id, params={})
+        tenant_subject = Subject("tenant", tenant_id)
+        return Warrant.delete("pricing-tier", pricing_tier_id, "member", tenant_subject)
 
     """
     Users
@@ -61,11 +63,13 @@ class PricingTier(APIResource):
 
     @classmethod
     def assign_to_user(cls, user_id, pricing_tier_id):
-        cls._post(uri="/v1/users/"+user_id+"/pricing-tiers/"+pricing_tier_id)
+        user_subject = Subject("user", user_id)
+        return Warrant.create("pricing-tier", pricing_tier_id, "member", user_subject)
 
     @classmethod
     def remove_from_user(cls, user_id, pricing_tier_id):
-        cls._delete(uri="/v1/users/"+user_id+"/pricing-tiers/"+pricing_tier_id, params={})
+        user_subject = Subject("user", user_id)
+        return Warrant.delete("pricing-tier", pricing_tier_id, "member", user_subject)
 
     """
     JSON serialization/deserialization
