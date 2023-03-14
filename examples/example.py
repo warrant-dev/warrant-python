@@ -144,7 +144,7 @@ Create authz sessions (for FE use)
 # Generate a self-service dashboard url for user2
 print("---------- FE & Self-service Authz Tokens ----------")
 user2.assign_permission("view-self-service-dashboard")
-print("Created self service dashboard url for user [" + user2.id + "]: " + warrant.Authz.create_self_service_url(tenant_id=tenant1.id, user_id=user2.id, redirect_url="http://example.com"))
+print("Created self service dashboard url for user [" + user2.id + "]: " + warrant.Authz.create_self_service_url(tenant_id=tenant1.id, user_id=user2.id, self_service_strategy="rbac", redirect_url="http://example.com"))
 
 # Authz sessions
 print("Created authorization session token for user [" + user1.id + "]: " + warrant.Authz.create_authorization_session(user_id=user1.id))
