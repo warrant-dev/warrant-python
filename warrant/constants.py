@@ -1,0 +1,6 @@
+FEATURE_OBJECT_TYPE = "feature"
+PERMISSION_OBJECT_TYPE = "permission"
+PRICING_TIER_OBJECT_TYPE = "pricing-tier"
+ROLE_OBJECT_TYPE = "role"
+TENANT_OBJECT_TYPE = "tenant"
+USER_OBJECT_TYPE = "user"

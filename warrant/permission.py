@@ -1,4 +1,4 @@
-from warrant import APIResource, Subject, Warrant
+from warrant import APIResource, Subject, Warrant, constants
 
 
 class Permission(APIResource):
@@ -47,13 +47,13 @@ class Permission(APIResource):
 
     @classmethod
     def assign_to_user(cls, user_id, permission_id):
-        user_subject = Subject("user", user_id)
-        return Warrant.create("permission", permission_id, "member", user_subject)
+        user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
+        return Warrant.create(constants.PERMISSION_OBJECT_TYPE, permission_id, "member", user_subject)
 
     @classmethod
     def remove_from_user(cls, user_id, permission_id):
-        user_subject = Subject("user", user_id)
-        return Warrant.delete("permission", permission_id, "member", user_subject)
+        user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
+        return Warrant.delete(constants.PERMISSION_OBJECT_TYPE, permission_id, "member", user_subject)
 
     """
     Roles
@@ -64,13 +64,13 @@ class Permission(APIResource):
 
     @classmethod
     def assign_to_role(cls, role_id, permission_id):
-        role_subject = Subject("role", role_id)
-        return Warrant.create("permission", permission_id, "member", role_subject)
+        role_subject = Subject(constants.ROLE_OBJECT_TYPE, role_id)
+        return Warrant.create(constants.PERMISSION_OBJECT_TYPE, permission_id, "member", role_subject)
 
     @classmethod
     def remove_from_role(cls, role_id, permission_id):
-        role_subject = Subject("role", role_id)
-        return Warrant.delete("permission", permission_id, "member", role_subject)
+        role_subject = Subject(constants.ROLE_OBJECT_TYPE, role_id)
+        return Warrant.delete(constants.PERMISSION_OBJECT_TYPE, permission_id, "member", role_subject)
 
     """
     JSON serialization/deserialization

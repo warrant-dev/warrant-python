@@ -1,4 +1,4 @@
-from warrant import APIResource, Subject, Warrant
+from warrant import APIResource, Subject, Warrant, constants
 
 
 class Feature(APIResource):
@@ -34,13 +34,13 @@ class Feature(APIResource):
 
     @classmethod
     def assign_to_pricing_tier(cls, pricing_tier_id, feature_id):
-        pricing_tier_subject = Subject("pricing-tier", pricing_tier_id)
-        return Warrant.create("feature", feature_id, "member", pricing_tier_subject)
+        pricing_tier_subject = Subject(constants.PRICING_TIER_OBJECT_TYPE, pricing_tier_id)
+        return Warrant.create(constants.FEATURE_OBJECT_TYPE, feature_id, "member", pricing_tier_subject)
 
     @classmethod
     def remove_from_pricing_tier(cls, pricing_tier_id, feature_id):
-        pricing_tier_subject = Subject("pricing-tier", pricing_tier_id)
-        return Warrant.delete("feature", feature_id, "member", pricing_tier_subject)
+        pricing_tier_subject = Subject(constants.PRICING_TIER_OBJECT_TYPE, pricing_tier_id)
+        return Warrant.delete(constants.FEATURE_OBJECT_TYPE, feature_id, "member", pricing_tier_subject)
 
     """
     Tenants
@@ -51,13 +51,13 @@ class Feature(APIResource):
 
     @classmethod
     def assign_to_tenant(cls, tenant_id, feature_id):
-        tenant_subject = Subject("tenant", tenant_id)
-        return Warrant.create("feature", feature_id, "member", tenant_subject)
+        tenant_subject = Subject(constants.TENANT_OBJECT_TYPE, tenant_id)
+        return Warrant.create(constants.FEATURE_OBJECT_TYPE, feature_id, "member", tenant_subject)
 
     @classmethod
     def remove_from_tenant(cls, tenant_id, feature_id):
-        tenant_subject = Subject("tenant", tenant_id)
-        return Warrant.delete("feature", feature_id, "member", tenant_subject)
+        tenant_subject = Subject(constants.TENANT_OBJECT_TYPE, tenant_id)
+        return Warrant.delete(constants.FEATURE_OBJECT_TYPE, feature_id, "member", tenant_subject)
 
     """
     Users
@@ -68,13 +68,13 @@ class Feature(APIResource):
 
     @classmethod
     def assign_to_user(cls, user_id, feature_id):
-        user_subject = Subject("user", user_id)
-        return Warrant.create("feature", feature_id, "member", user_subject)
+        user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
+        return Warrant.create(constants.FEATURE_OBJECT_TYPE, feature_id, "member", user_subject)
 
     @classmethod
     def remove_from_user(cls, user_id, feature_id):
-        user_subject = Subject("user", user_id)
-        return Warrant.delete("feature", feature_id, "member", user_subject)
+        user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
+        return Warrant.delete(constants.FEATURE_OBJECT_TYPE, feature_id, "member", user_subject)
 
     """
     JSON serialization/deserialization
