@@ -26,8 +26,9 @@ tenant2 = warrant.Tenant.create(id="big_box_paper")
 print(f"Created tenants: [{tenant1.id}, {tenant2.id}]")
 tenant1.assign_user(user1.id)
 print(f"Assigned user [{user1.id}] to tenant [{tenant1.id}]")
-tenant2.assign_user(user2.id)
-print(f"Assigned user [{user2.id}] to tenant [{tenant2.id}]")
+user2_subject = warrant.Subject("user", user2.id)
+warrant.Warrant.create("tenant", tenant1.id, "admin", user2_subject)
+print(f"Assigned user [{user2.id}] as admin to tenant [{tenant2.id}]")
 tenant1_users = ""
 for u in tenant1.list_users():
     tenant1_users += u.id + " "
@@ -143,8 +144,8 @@ Create authz sessions (for FE use)
 """
 # Generate a self-service dashboard url for user2
 print("---------- FE & Self-service Authz Tokens ----------")
-user2.assign_permission("view-self-service-dashboard")
-print("Created self service dashboard url for user [" + user2.id + "]: " + warrant.Authz.create_self_service_url(tenant_id=tenant1.id, user_id=user2.id, redirect_url="http://example.com"))
+print("Created self service dashboard url for user [" + user2.id + "]: " +
+      warrant.Authz.create_self_service_url(tenant_id=tenant1.id, user_id=user2.id, self_service_strategy="rbac", redirect_url="http://example.com"))
 
 # Authz sessions
 print("Created authorization session token for user [" + user1.id + "]: " + warrant.Authz.create_authorization_session(user_id=user1.id))
@@ -156,24 +157,25 @@ print("\n")
 Create and query your own warrants
 """
 print("---------- Create & Query Warrants ----------")
+permission1 = warrant.Permission.create(id="permission1")
 user1_subject = warrant.Subject("user", user1.id)
-result = warrant.Authz.check("permission", "view-self-service-dashboard", "member", user1_subject)
-print(f"Does [{user1.id}] have the [view-self-service-dashboard] permission? (should be false) -> {result}")
-warrant.Warrant.create("permission", "view-self-service-dashboard", "member", user1_subject)
-print("Manually assigned [view-self-service-dashboard] permission to [" + user1.id + "]")
-result = warrant.Authz.check("permission", "view-self-service-dashboard", "member", user1_subject)
-print(f"Does [{user1.id}] have the [view-self-service-dashboard] permission? (should be true) -> {result}")
+result = warrant.Authz.check("permission", "permission1", "member", user1_subject)
+print(f"Does [{user1.id}] have the [permission1] permission? (should be false) -> {result}")
+warrant.Warrant.create("permission", "permission1", "member", user1_subject)
+print("Manually assigned [permission1] permission to [" + user1.id + "]")
+result = warrant.Authz.check("permission", "permission1", "member", user1_subject)
+print(f"Does [{user1.id}] have the [permission1] permission? (should be true) -> {result}")
 
 # Query warrants
-warrants = warrant.Warrant.query(select="explicit warrants", for_clause="subject=user:"+user1.id, where="relation=member")
-print("Query warrants results:")
-for w in warrants:
-    print(f"[{w.object_type}:{w.object_id} {w.relation} {w.subject.object_type}:{w.subject.object_id}]")
+# warrants = warrant.Warrant.query(select="explicit warrants", for_clause="subject=user:"+user1.id, where="relation=member")
+# print("Query warrants results:")
+# for w in warrants:
+#     print(f"[{w.object_type}:{w.object_id} {w.relation} {w.subject.object_type}:{w.subject.object_id}]")
 
-warrant.Warrant.delete("permission", "view-self-service-dashboard", "member", user1_subject)
-print("Manually removed [view-self-service-dashboard] permission from [" + user1.id + "]")
-result = warrant.Authz.check("permission", "view-self-service-dashboard", "member", user1_subject)
-print(f"Does [{user1.id}] have the [view-self-service-dashboard] permission? (should be false) -> {result}")
+warrant.Warrant.delete("permission", "permission1", "member", user1_subject)
+print("Manually removed [permission1] permission from [" + user1.id + "]")
+result = warrant.Authz.check("permission", "permission1", "member", user1_subject)
+print(f"Does [{user1.id}] have the [permission1] permission? (should be false) -> {result}")
 print("\n")
 
 
@@ -185,13 +187,12 @@ print("Cleaning up...")
 user1.remove_permission(special_perm.id)
 user1.remove_role(admin_role.id)
 user2.remove_role(viewer_role.id)
-user2.remove_permission("view-self-service-dashboard")
 admin_role.remove_permission(create_report_perm.id)
 admin_role.remove_permission(delete_report_perm.id)
 admin_role.remove_permission(view_report_perm.id)
 viewer_role.remove_permission(view_report_perm.id)
 tenant1.remove_user(user1.id)
-tenant2.remove_user(user2.id)
+warrant.Warrant.delete("tenant", tenant1.id, "admin", user2_subject)
 enterprise_tier.remove_feature(analytics_feature.id)
 free_tier.remove_feature(dashboard_feature.id)
 
@@ -205,6 +206,7 @@ warrant.Permission.delete(create_report_perm.id)
 warrant.Permission.delete(delete_report_perm.id)
 warrant.Permission.delete(view_report_perm.id)
 warrant.Permission.delete(special_perm.id)
+warrant.Permission.delete(permission1.id)
 warrant.Feature.delete(analytics_feature.id)
 warrant.Feature.delete(dashboard_feature.id)
 warrant.PricingTier.delete(enterprise_tier.id)

@@ -1,4 +1,4 @@
-from warrant import APIResource, Permission
+from warrant import APIResource, Permission, Subject, Warrant, constants
 
 
 class Role(APIResource):
@@ -47,11 +47,13 @@ class Role(APIResource):
 
     @classmethod
     def assign_to_user(cls, user_id, role_id):
-        cls._post(uri="/v1/users/"+user_id+"/roles/"+role_id, json={})
+        user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
+        return Warrant.create(constants.ROLE_OBJECT_TYPE, role_id, "member", user_subject)
 
     @classmethod
     def remove_from_user(cls, user_id, role_id):
-        cls._delete(uri="/v1/users/"+user_id+"/roles/"+role_id, params={})
+        user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
+        return Warrant.delete(constants.ROLE_OBJECT_TYPE, role_id, "member", user_subject)
 
     """
     Permissions

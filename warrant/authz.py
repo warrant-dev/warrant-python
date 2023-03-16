@@ -37,11 +37,12 @@ class Authz(APIResource):
         return json["token"]
 
     @classmethod
-    def create_self_service_url(cls, tenant_id, user_id, redirect_url):
+    def create_self_service_url(cls, tenant_id, user_id, self_service_strategy, redirect_url):
         payload = {
             "type": "ssdash",
             "userId": user_id,
-            "tenantId": tenant_id
+            "tenantId": tenant_id,
+            "selfServiceStrategy": self_service_strategy,
         }
         json = cls._post(uri="/v1/sessions", json=payload)
         token = json["token"]

@@ -1,4 +1,4 @@
-from warrant import APIResource, PricingTier, Feature, Role, Permission, Authz, Subject
+from warrant import APIResource, PricingTier, Feature, Role, Permission, Authz, Subject, Warrant, constants
 
 
 class User(APIResource):
@@ -43,11 +43,13 @@ class User(APIResource):
     """
     @classmethod
     def assign_to_tenant(cls, tenant_id, user_id):
-        cls._post(uri="/v1/tenants/"+tenant_id+"/users/"+user_id, json={})
+        user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
+        return Warrant.create(constants.TENANT_OBJECT_TYPE, tenant_id, "member", user_subject)
 
     @classmethod
     def remove_from_tenant(cls, tenant_id, user_id):
-        cls._delete(uri="/v1/tenants/"+tenant_id+"/users/"+user_id, params={})
+        user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
+        return Warrant.delete(constants.TENANT_OBJECT_TYPE, tenant_id, "member", user_subject)
 
     """
     Roles

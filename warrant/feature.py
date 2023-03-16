@@ -1,4 +1,4 @@
-from warrant import APIResource
+from warrant import APIResource, Subject, Warrant, constants
 
 
 class Feature(APIResource):
@@ -34,11 +34,13 @@ class Feature(APIResource):
 
     @classmethod
     def assign_to_pricing_tier(cls, pricing_tier_id, feature_id):
-        cls._post(uri="/v1/pricing-tiers/"+pricing_tier_id+"/features/"+feature_id, json={})
+        pricing_tier_subject = Subject(constants.PRICING_TIER_OBJECT_TYPE, pricing_tier_id)
+        return Warrant.create(constants.FEATURE_OBJECT_TYPE, feature_id, "member", pricing_tier_subject)
 
     @classmethod
     def remove_from_pricing_tier(cls, pricing_tier_id, feature_id):
-        cls._delete(uri="/v1/pricing-tiers/"+pricing_tier_id+"/features/"+feature_id, params={})
+        pricing_tier_subject = Subject(constants.PRICING_TIER_OBJECT_TYPE, pricing_tier_id)
+        return Warrant.delete(constants.FEATURE_OBJECT_TYPE, feature_id, "member", pricing_tier_subject)
 
     """
     Tenants
@@ -49,11 +51,13 @@ class Feature(APIResource):
 
     @classmethod
     def assign_to_tenant(cls, tenant_id, feature_id):
-        cls._post(uri="/v1/tenants/"+tenant_id+"/features/"+feature_id, json={})
+        tenant_subject = Subject(constants.TENANT_OBJECT_TYPE, tenant_id)
+        return Warrant.create(constants.FEATURE_OBJECT_TYPE, feature_id, "member", tenant_subject)
 
     @classmethod
     def remove_from_tenant(cls, tenant_id, feature_id):
-        cls._delete(uri="/v1/tenants/"+tenant_id+"/features/"+feature_id, params={})
+        tenant_subject = Subject(constants.TENANT_OBJECT_TYPE, tenant_id)
+        return Warrant.delete(constants.FEATURE_OBJECT_TYPE, feature_id, "member", tenant_subject)
 
     """
     Users
@@ -64,11 +68,13 @@ class Feature(APIResource):
 
     @classmethod
     def assign_to_user(cls, user_id, feature_id):
-        cls._post(uri="/v1/users/"+user_id+"/features/"+feature_id, json={})
+        user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
+        return Warrant.create(constants.FEATURE_OBJECT_TYPE, feature_id, "member", user_subject)
 
     @classmethod
     def remove_from_user(cls, user_id, feature_id):
-        cls._delete(uri="/v1/users/"+user_id+"/features/"+feature_id, params={})
+        user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
+        return Warrant.delete(constants.FEATURE_OBJECT_TYPE, feature_id, "member", user_subject)
 
     """
     JSON serialization/deserialization
