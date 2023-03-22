@@ -9,7 +9,8 @@ Common usage examples for:
 """
 
 # Replace with your own API key to run example
-warrant.api_key = "YOUR_KEY"
+warrant.api_key = ""
+warrant.api_endpoint = "https://api.warrant.dev"
 
 """
 Users & Tenants
