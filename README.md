@@ -16,8 +16,21 @@ pip install warrant-python
 ```python
 import warrant
 
-warrant = Warrant("api_test_f5dsKVeYnVSLHGje44zAygqgqXiLJBICbFzCiAg1E=")
-warrant.create_user()
+warrant.api_key = "api_test_f5dsKVeYnVSLHGje44zAygqgqXiLJBICbFzCiAg1E="
+
+warrant.User.create()
+warrant.Tenant.create(id="dunder_mifflin")
+```
+
+## Configuring the API Endpoint
+---
+The API endpoint the SDK makes requests to is configurable via the `warrant.api_endpoint` attribute:
+
+```python
+import warrant
+
+# Set api endpoint to http://localhost:8000
+warrant.api_endpoint = 'http://localhost:8000'
 ```
 
 We’ve used a random API key in these code examples. Replace it with your
