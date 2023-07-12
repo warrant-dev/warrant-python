@@ -27,11 +27,12 @@ class Warrant(APIResource):
         self.subject = obj["subject"]
 
     @classmethod
-    def create(cls, object_type, object_id, relation, subject):
+    def create(cls, object_type, object_id, relation, subject, policy=""):
         payload = {
             "objectType": object_type,
             "objectId": object_id,
-            "relation": relation
+            "relation": relation,
+            "policy": policy
         }
         if isinstance(subject, Subject):
             payload["subject"] = {
@@ -53,11 +54,12 @@ class Warrant(APIResource):
         return cls._get(uri="/v1/query", params=params, object_hook=Warrant.from_json)
 
     @classmethod
-    def delete(cls, object_type, object_id, relation, subject):
+    def delete(cls, object_type, object_id, relation, subject, policy=""):
         payload = {
             "objectType": object_type,
             "objectId": object_id,
-            "relation": relation
+            "relation": relation,
+            "policy": policy
         }
         if isinstance(subject, Subject):
             payload["subject"] = {
