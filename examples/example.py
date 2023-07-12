@@ -167,6 +167,17 @@ print("Manually assigned [permission1] permission to [" + user1.id + "]")
 result = warrant.Authz.check("permission", "permission1", "member", user1_subject)
 print(f"Does [{user1.id}] have the [permission1] permission? (should be true) -> {result}")
 
+# Create, check, and delete warrant with a policy
+test_user_subject = warrant.Subject("user", "test-user")
+warrant.Warrant.create("permission", "test-permission", "member", test_user_subject, "geo == 'us'")
+print("Manually assigned [test-permission] permission to test-user with the context [geo == 'us']")
+result = warrant.Authz.check("permission", "test-permission", "member", test_user_subject, { "geo": "us" })
+print(f"Does test-user have the [test-permission] permission with the following context [geo == 'us']? (should be true) -> {result}")
+result = warrant.Authz.check("permission", "test-permission", "member", test_user_subject, { "geo": "eu" })
+print(f"Does test-user have the [test-permission] permission with the following context [geo == 'eu']? (should be false) -> {result}")
+warrant.Warrant.delete("permission", "test-permission", "member", test_user_subject, "geo == 'us'")
+print("Manually removed [test-permission] permission from test-user with the context [geo == 'us']")
+
 # Query warrants
 # warrants = warrant.Warrant.query(select="explicit warrants", for_clause="subject=user:"+user1.id, where="relation=member")
 # print("Query warrants results:")
