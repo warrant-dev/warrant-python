@@ -5,7 +5,7 @@ from warrant import APIResource
 class Authz(APIResource):
 
     @classmethod
-    def check(cls, object_type, object_id, relation, subject):
+    def check(cls, object_type, object_id, relation, subject, context={}):
         warrantToCheck = {
             "objectType": object_type,
             "objectId": object_id,
@@ -14,7 +14,8 @@ class Authz(APIResource):
                 "objectType": subject.object_type,
                 "objectId": subject.object_id,
                 "relation": subject.relation
-            }
+            },
+            "context": context
         }
         payload = {
             "op": "anyOf",

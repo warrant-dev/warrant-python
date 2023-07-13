@@ -27,7 +27,7 @@ class Warrant(APIResource):
         self.subject = obj["subject"]
 
     @classmethod
-    def create(cls, object_type, object_id, relation, subject):
+    def create(cls, object_type, object_id, relation, subject, policy=""):
         payload = {
             "objectType": object_type,
             "objectId": object_id,
@@ -41,6 +41,8 @@ class Warrant(APIResource):
             }
         else:
             raise WarrantException(msg="Invalid type for \'subject\'. Must be of type Subject")
+        if policy != "":
+            payload["policy"] = policy
         cls._post(uri="/v1/warrants", json=payload)
 
     @classmethod
@@ -53,7 +55,7 @@ class Warrant(APIResource):
         return cls._get(uri="/v1/query", params=params, object_hook=Warrant.from_json)
 
     @classmethod
-    def delete(cls, object_type, object_id, relation, subject):
+    def delete(cls, object_type, object_id, relation, subject, policy=""):
         payload = {
             "objectType": object_type,
             "objectId": object_id,
@@ -67,6 +69,8 @@ class Warrant(APIResource):
             }
         else:
             raise WarrantException(msg="Invalid type for \'subject\'. Must be of type Subject")
+        if policy != "":
+            payload["policy"] = policy
         cls._delete(uri="/v1/warrants", json=payload)
 
     """
