@@ -13,6 +13,22 @@ warrant.api_key = ""
 warrant.api_endpoint = "https://api.warrant.dev"
 
 """
+Objects
+"""
+# Create objects
+print("---------- Objects ----------")
+object1 = warrant.WarrantObject.create(object_type="document")
+object2 = warrant.WarrantObject.create(object_type="folder", object_id="planning")
+print(f"Created objects: [{object1.object_type}:{object1.object_id} {object2.object_type}:{object2.object_id}]")
+object1 = warrant.WarrantObject.get(object1.object_type, object1.object_id)
+print(f"Fetched object: {object1.object_type}:{object1.object_id}")
+object2.update(meta={"description": "Folder for planning docs"})
+print(f"Updated object: {object2.object_type}:{object2.object_id} [{object2.meta}]")
+
+objects_list = warrant.WarrantObject.list({"limit": 2})
+print(f"List objects: {objects_list}")
+
+"""
 Users & Tenants
 """
 # Create some users
@@ -220,6 +236,8 @@ warrant.Warrant.delete("tenant", tenant1.id, "admin", user2_subject)
 enterprise_tier.remove_feature(analytics_feature.id)
 free_tier.remove_feature(dashboard_feature.id)
 
+warrant.WarrantObject.delete(object1.object_type, object1.object_id)
+warrant.WarrantObject.delete(object2.object_type, object2.object_id)
 warrant.User.delete(user1.id)
 warrant.User.delete(user2.id)
 warrant.Tenant.delete(tenant1.id)
