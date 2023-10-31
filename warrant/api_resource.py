@@ -48,7 +48,7 @@ class APIResource(object):
             headers["Authorization"] = "ApiKey " + warrant.api_key
         resp = requests.put(url=warrant.api_endpoint+uri, headers=headers, json=json)
         if resp.status_code == 200:
-            resp.json(object_hook=object_hook)
+            return resp.json(object_hook=object_hook)
         else:
             raise WarrantException(msg=resp.text, status_code=resp.status_code)
 

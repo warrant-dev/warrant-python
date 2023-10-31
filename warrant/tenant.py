@@ -32,7 +32,8 @@ class Tenant(APIResource):
         payload = {
             "name": name
         }
-        return self._put(uri="/v1/tenants/"+self.id, json=payload, object_hook=Tenant.from_json)
+        updated_tenant = self._put(uri="/v1/tenants/"+self.id, json=payload, object_hook=Tenant.from_json)
+        self.name = updated_tenant.name
 
     @classmethod
     def delete(cls, id):

@@ -32,7 +32,9 @@ class Role(APIResource):
             "name": name,
             "description": description
         }
-        return self._put(uri="/v1/roles/"+self.id, json=payload, object_hook=Role.from_json)
+        updated_role = self._put(uri="/v1/roles/"+self.id, json=payload, object_hook=Role.from_json)
+        self.name = updated_role.name
+        self.description = updated_role.description
 
     @classmethod
     def delete(cls, id):

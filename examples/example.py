@@ -20,11 +20,15 @@ print("---------- Users & Tenants ----------")
 user1 = warrant.User.create()
 user2 = warrant.User.create(id="custom_user_id_1")
 print(f"Created users: [{user1.id}, {user2.id}]")
+user2.update("newemail@test.com")
+print(f"User updated: {user2.id} - {user2.email}")
 
 # Create tenants & assign the users to them (multitenancy)
 tenant1 = warrant.Tenant.create(id="dunder_mifflin")
 tenant2 = warrant.Tenant.create(id="big_box_paper")
 print(f"Created tenants: [{tenant1.id}, {tenant2.id}]")
+tenant1.update("Dunder Mifflin")
+print(f"Updated tenant: {tenant1.id} - {tenant1.name}")
 tenant1.assign_user(user1.id)
 print(f"Assigned user [{user1.id}] to tenant [{tenant1.id}]")
 user2_subject = warrant.Subject("user", user2.id)
@@ -49,6 +53,8 @@ print("---------- Role Based Access Control ----------")
 admin_role = warrant.Role.create(id="admin1")
 viewer_role = warrant.Role.create(id="viewer")
 print(f"Created roles: [{admin_role.id}, {viewer_role.id}]")
+admin_role.update("Admin", "Administrator role")
+print(f"Updated admin role: {admin_role.id} - {admin_role.name} - {admin_role.description}")
 
 # Create permissions
 create_report_perm = warrant.Permission.create(id="create_report")
@@ -56,6 +62,8 @@ delete_report_perm = warrant.Permission.create(id="delete_report")
 view_report_perm = warrant.Permission.create(id="view_report")
 special_perm = warrant.Permission.create(id="special_perm")
 print(f"Created permissions: [{create_report_perm.id}, {delete_report_perm.id}, {view_report_perm.id}, {special_perm.id}]")
+create_report_perm.update("Create Report", "Permission for creating reports")
+print(f"Updated create report permission: {create_report_perm.id} - {create_report_perm.name} - {create_report_perm.description}")
 
 # Assign permissions to roles:
 # 'create_report', 'delete_report', 'view_report' -> 'admin' role
@@ -177,6 +185,10 @@ result = warrant.Authz.check("permission", "test-permission", "member", test_use
 print(f"Does test-user have the [test-permission] permission with the following context [geo == 'eu']? (should be false) -> {result}")
 warrant.Warrant.delete("permission", "test-permission", "member", test_user_subject, "geo == 'us'")
 print("Manually removed [test-permission] permission from test-user with the context [geo == 'us']")
+warrant.WarrantObject.delete("user", "test-user")
+print("Removed automatically created object user:test-user")
+warrant.WarrantObject.delete("permission", "test-permission")
+print("Removed automatically created object permission:test-permission")
 
 # Query warrants
 # warrants = warrant.Warrant.query(select="explicit warrants", for_clause="subject=user:"+user1.id, where="relation=member")

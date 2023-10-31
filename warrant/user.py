@@ -32,7 +32,8 @@ class User(APIResource):
         payload = {
             "email": email
         }
-        return self._put(uri="/v1/users/"+self.id, json=payload, object_hook=User.from_json)
+        updated_user = self._put(uri="/v1/users/"+self.id, json=payload, object_hook=User.from_json)
+        self.email = updated_user.email
 
     @classmethod
     def delete(cls, id):

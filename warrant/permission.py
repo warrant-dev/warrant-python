@@ -32,7 +32,9 @@ class Permission(APIResource):
             "name": name,
             "description": description
         }
-        return self._put(uri="/v1/permissions/"+self.id, json=payload, object_hook=Permission.from_json)
+        updated_permission = self._put(uri="/v1/permissions/"+self.id, json=payload, object_hook=Permission.from_json)
+        self.name = updated_permission.name
+        self.description = updated_permission.description
 
     @classmethod
     def delete(cls, id):
