@@ -21,7 +21,7 @@ class Authz(APIResource):
             "op": "anyOf",
             "warrants": [warrantToCheck]
         }
-        json_resp = cls._post(uri="/v2/authorize", json=payload)
+        json_resp = cls._post(uri="/v2/check", json=payload)
         code = json_resp["code"]
         result = json_resp["result"]
         if result == "Authorized" and code == 200:
