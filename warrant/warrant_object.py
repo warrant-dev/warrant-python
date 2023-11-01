@@ -26,6 +26,10 @@ class WarrantObject(APIResource):
         return cls._post(uri="/v2/objects", json=payload, object_hook=WarrantObject.from_json)
 
     @classmethod
+    def batch_create(cls, objects):
+        return cls._post(uri="/v2/objects", json=objects, object_hook=WarrantObject.from_json)
+
+    @classmethod
     def get(cls, object_type, object_id):
         return cls._get("/v2/objects/"+object_type+"/"+object_id, params={}, object_hook=WarrantObject.from_json)
 
@@ -39,6 +43,10 @@ class WarrantObject(APIResource):
     @classmethod
     def delete(cls, object_type, object_id):
         return cls._delete(uri="/v2/objects/"+object_type+"/"+object_id, params={})
+
+    @classmethod
+    def batch_delete(cls, objects):
+        return cls._delete(uri="/v2/objects", json=objects)
 
     """
     JSON serialization/deserialization

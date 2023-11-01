@@ -25,6 +25,13 @@ print(f"Fetched object: {object1.object_type}:{object1.object_id}")
 object2.update(meta={"description": "Folder for planning docs"})
 print(f"Updated object: {object2.object_type}:{object2.object_id} [{object2.meta}]")
 
+batch_objects = warrant.WarrantObject.batch_create([
+    {"objectType": "user", "objectId": "user-a"},
+    {"objectType": "tenant", "objectId": "tenant-a"},
+    {"objectType": "org", "objectId": "org-a"},
+])
+print(f"Batch created objects: {batch_objects}")
+
 objects_list = warrant.WarrantObject.list({"limit": 2})
 print(f"List objects: {objects_list}")
 
@@ -236,6 +243,11 @@ warrant.Warrant.delete("tenant", tenant1.id, "admin", user2_subject)
 enterprise_tier.remove_feature(analytics_feature.id)
 free_tier.remove_feature(dashboard_feature.id)
 
+warrant.WarrantObject.batch_delete([
+    {"objectType": "user", "objectId": "user-a"},
+    {"objectType": "tenant", "objectId": "tenant-a"},
+    {"objectType": "org", "objectId": "org-a"},
+])
 warrant.WarrantObject.delete(object1.object_type, object1.object_id)
 warrant.WarrantObject.delete(object2.object_type, object2.object_id)
 warrant.User.delete(user1.id)
