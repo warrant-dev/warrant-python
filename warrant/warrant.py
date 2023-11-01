@@ -46,13 +46,11 @@ class Warrant(APIResource):
         cls._post(uri="/v1/warrants", json=payload)
 
     @classmethod
-    def query(cls, select, for_clause, where):
+    def query(cls, query, list_params={}):
         params = {
-            "select": select,
-            "for": for_clause,
-            "where": where,
-        }
-        return cls._get(uri="/v1/query", params=params, object_hook=Warrant.from_json)
+            "q": query,
+        } | list_params
+        return cls._get(uri="/v2/query", params=params)
 
     @classmethod
     def delete(cls, object_type, object_id, relation, subject, policy=""):

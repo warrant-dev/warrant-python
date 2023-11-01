@@ -214,10 +214,10 @@ warrant.WarrantObject.delete("permission", "test-permission")
 print("Removed automatically created object permission:test-permission")
 
 # Query warrants
-# warrants = warrant.Warrant.query(select="explicit warrants", for_clause="subject=user:"+user1.id, where="relation=member")
-# print("Query warrants results:")
-# for w in warrants:
-#     print(f"[{w.object_type}:{w.object_id} {w.relation} {w.subject.object_type}:{w.subject.object_id}]")
+query_result = warrant.Warrant.query("select explicit * where user:"+user1.id+" is member")
+print("Query warrants results:")
+for w in query_result['results']:
+    print(f"[{w['warrant']['objectType']}:{w['warrant']['objectId']} {w['warrant']['relation']} {w['warrant']['subject']['objectType']}:{w['warrant']['subject']['objectId']}]")
 
 warrant.Warrant.delete("permission", "permission1", "member", user1_subject)
 print("Manually removed [permission1] permission from [" + user1.id + "]")
