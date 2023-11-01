@@ -1,43 +1,36 @@
-from warrant import APIResource, PricingTier, Feature, Role, Permission, Authz, Subject, Warrant, constants
+from warrant import APIResource, PricingTier, Feature, Role, Permission, Authz, Subject, Warrant, WarrantObject, constants
 
 
-class User(APIResource):
-
-    def __init__(self, id, email):
+class User(WarrantObject):
+    def __init__(self, id="", meta=None):
         self.id = id
-        self.email = email
+        WarrantObject.__init__(self, "user", id, meta)
 
     @classmethod
     def list(cls, list_params={}):
-        return cls._get(uri="/v1/users", params=list_params, object_hook=User.from_json)
+        list_params['objectType'] = 'user'
+        list_result = WarrantObject.list(list_params)
+        users = map(lambda warrant_obj: User(warrant_obj.object_id, warrant_obj.meta), list_result['results'])
+        list_result['results'] = list(users)
+        return list_result
 
     @classmethod
     def list_for_tenant(cls, tenant_id, list_params={}):
-        return cls._get(uri="/v1/tenants/"+tenant_id+"/users", params=list_params, object_hook=User.from_json)
+        return Warrant.query("select * of type user for tenant:"+tenant_id, list_params)
 
     @classmethod
     def get(cls, id):
-        return cls._get(uri="/v1/users/"+id, params={}, object_hook=User.from_json)
+        warrant_obj = WarrantObject.get("user", id)
+        return User.from_warrant_obj(warrant_obj)
 
     @classmethod
-    def create(cls, id="", email=""):
-        payload = {}
-        if id != "":
-            payload["userId"] = id
-        if email != "":
-            payload["email"] = email
-        return cls._post(uri="/v1/users", json=payload, object_hook=User.from_json)
-
-    def update(self, email):
-        payload = {
-            "email": email
-        }
-        updated_user = self._put(uri="/v1/users/"+self.id, json=payload, object_hook=User.from_json)
-        self.email = updated_user.email
+    def create(cls, id="", meta={}):
+        warrant_obj = WarrantObject.create("user", id, meta)
+        return User.from_warrant_obj(warrant_obj)
 
     @classmethod
     def delete(cls, id):
-        return cls._delete(uri="/v1/users/"+id, params={})
+        return WarrantObject.delete("user", id)
 
     """
     Tenants
@@ -110,5 +103,15 @@ class User(APIResource):
     JSON serialization/deserialization
     """
     @staticmethod
+    def from_warrant_obj(obj):
+        return User(obj.object_id, obj.meta)
+
+    @staticmethod
     def from_json(obj):
-        return User(obj["userId"], obj["email"])
+        if "objectType" in obj and "objectId" in obj:
+            if "meta" in obj:
+                return User(obj["objectId"], obj["meta"])
+            else:
+                return User(obj["objectId"])
+        else:
+            return obj

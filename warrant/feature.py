@@ -1,36 +1,39 @@
-from warrant import APIResource, Subject, Warrant, constants
+from warrant import APIResource, Subject, Warrant, WarrantObject, constants
 
 
-class Feature(APIResource):
-
-    def __init__(self, id):
+class Feature(WarrantObject):
+    def __init__(self, id="", meta=None):
         self.id = id
+        WarrantObject.__init__(self, "feature", id, meta)
 
     @classmethod
     def list(cls, list_params={}):
-        return cls._get(uri="/v1/features", params=list_params, object_hook=Feature.from_json)
+        list_params['objectType'] = 'feature'
+        list_result = WarrantObject.list(list_params)
+        features = map(lambda warrant_obj: Feature(warrant_obj.object_id, warrant_obj.meta), list_result['results'])
+        list_result['results'] = list(features)
+        return list_result
 
     @classmethod
     def get(cls, id):
-        return cls._get(uri="/v1/features/"+id, params={}, object_hook=Feature.from_json)
+        warrant_obj = WarrantObject.get("feature", id)
+        return Feature.from_warrant_obj(warrant_obj)
 
     @classmethod
-    def create(cls, id):
-        payload = {
-            "featureId": id
-        }
-        return cls._post(uri="/v1/features", json=payload, object_hook=Feature.from_json)
+    def create(cls, id, meta={}):
+        warrant_obj = WarrantObject.create("feature", id, meta)
+        return Feature.from_warrant_obj(warrant_obj)
 
     @classmethod
     def delete(cls, id):
-        cls._delete(uri="/v1/features/"+id, params={})
+        return WarrantObject.delete("feature", id)
 
     """
     Pricing tiers
     """
     @classmethod
     def list_for_pricing_tier(cls, pricing_tier_id, list_params={}):
-        return cls._get(uri="/v1/pricing-tiers/"+pricing_tier_id+"/features", params=list_params, object_hook=Feature.from_json)
+        return Warrant.query("select feature where pricing-tier:"+pricing_tier_id+" is *", list_params)
 
     @classmethod
     def assign_to_pricing_tier(cls, pricing_tier_id, feature_id):
@@ -47,7 +50,7 @@ class Feature(APIResource):
     """
     @classmethod
     def list_for_tenant(cls, tenant_id, list_params={}):
-        return cls._get(uri="/v1/tenants/"+tenant_id+"/features", params=list_params, object_hook=Feature.from_json)
+        return Warrant.query("select feature where tenant:"+tenant_id+" is *", list_params)
 
     @classmethod
     def assign_to_tenant(cls, tenant_id, feature_id):
@@ -64,7 +67,7 @@ class Feature(APIResource):
     """
     @classmethod
     def list_for_user(cls, user_id, list_params={}):
-        return cls._get(uri="/v1/users/"+user_id+"/features", params=list_params, object_hook=Feature.from_json)
+        return Warrant.query("select feature where user:"+user_id+" is *", list_params)
 
     @classmethod
     def assign_to_user(cls, user_id, feature_id):
@@ -80,5 +83,15 @@ class Feature(APIResource):
     JSON serialization/deserialization
     """
     @staticmethod
+    def from_warrant_obj(obj):
+        return Feature(obj.object_id, obj.meta)
+
+    @staticmethod
     def from_json(obj):
-        return Feature(obj["featureId"])
+        if "objectType" in obj and "objectId" in obj:
+            if "meta" in obj:
+                return Feature(obj["objectId"], obj["meta"])
+            else:
+                return Feature(obj["objectId"])
+        else:
+            return obj

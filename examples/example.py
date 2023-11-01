@@ -43,27 +43,27 @@ print("---------- Users & Tenants ----------")
 user1 = warrant.User.create()
 user2 = warrant.User.create(id="custom_user_id_1")
 print(f"Created users: [{user1.id}, {user2.id}]")
-user2.update("newemail@test.com")
-print(f"User updated: {user2.id} - {user2.email}")
+user2.update({"email":"newemail@test.com"})
+print(f"User updated: {user2.id} - {user2.meta}")
 
 # Create tenants & assign the users to them (multitenancy)
 tenant1 = warrant.Tenant.create(id="dunder_mifflin")
 tenant2 = warrant.Tenant.create(id="big_box_paper")
 print(f"Created tenants: [{tenant1.id}, {tenant2.id}]")
-tenant1.update("Dunder Mifflin")
-print(f"Updated tenant: {tenant1.id} - {tenant1.name}")
+tenant1.update({"name": "Dunder Mifflin"})
+print(f"Updated tenant: {tenant1.id} - {tenant1.meta}")
 tenant1.assign_user(user1.id)
 print(f"Assigned user [{user1.id}] to tenant [{tenant1.id}]")
 user2_subject = warrant.Subject("user", user2.id)
 warrant.Warrant.create("tenant", tenant1.id, "admin", user2_subject)
 print(f"Assigned user [{user2.id}] as admin to tenant [{tenant2.id}]")
 tenant1_users = ""
-for u in tenant1.list_users():
-    tenant1_users += u.id + " "
+for u in tenant1.list_users()['results']:
+    tenant1_users += u['objectId'] + " "
 print(f"Verify users for [{tenant1.id}]: [{tenant1_users}]")
 tenant2_users = ""
-for u in tenant2.list_users():
-    tenant2_users += u.id + " "
+for u in tenant2.list_users()['results']:
+    tenant2_users += u['objectId'] + " "
 print(f"Verify users for [{tenant2.id}]: [{tenant2_users}]")
 print("\n")
 
@@ -76,8 +76,11 @@ print("---------- Role Based Access Control ----------")
 admin_role = warrant.Role.create(id="admin1")
 viewer_role = warrant.Role.create(id="viewer")
 print(f"Created roles: [{admin_role.id}, {viewer_role.id}]")
-admin_role.update("Admin", "Administrator role")
-print(f"Updated admin role: {admin_role.id} - {admin_role.name} - {admin_role.description}")
+admin_role.update({"name": "Admin", "description": "Administrator role"})
+print(f"Updated admin role: {admin_role.id} - {admin_role.meta}")
+
+roles_list = warrant.Role.list({"limit": 10})
+print(f"List roles: {roles_list}")
 
 # Create permissions
 create_report_perm = warrant.Permission.create(id="create_report")
@@ -85,8 +88,11 @@ delete_report_perm = warrant.Permission.create(id="delete_report")
 view_report_perm = warrant.Permission.create(id="view_report")
 special_perm = warrant.Permission.create(id="special_perm")
 print(f"Created permissions: [{create_report_perm.id}, {delete_report_perm.id}, {view_report_perm.id}, {special_perm.id}]")
-create_report_perm.update("Create Report", "Permission for creating reports")
-print(f"Updated create report permission: {create_report_perm.id} - {create_report_perm.name} - {create_report_perm.description}")
+create_report_perm.update({"name": "Create Report", "description": "Permission for creating reports"})
+print(f"Updated create report permission: {create_report_perm.id} - {create_report_perm.meta}")
+
+permissions_list = warrant.Permission.list({"limit": 10})
+print(f"List permissions: {permissions_list}")
 
 # Assign permissions to roles:
 # 'create_report', 'delete_report', 'view_report' -> 'admin' role
@@ -95,13 +101,13 @@ admin_role.assign_permission(create_report_perm.id)
 admin_role.assign_permission(delete_report_perm.id)
 admin_role.assign_permission(view_report_perm.id)
 admin_role_perms = ""
-for p in admin_role.list_permissions():
-    admin_role_perms += p.id + " "
+for p in admin_role.list_permissions()['results']:
+    admin_role_perms += p['objectId'] + " "
 print(f"Assigned permissions to [{admin_role.id}] role: [{admin_role_perms}]")
 viewer_role.assign_permission(view_report_perm.id)
 viewer_role_perms = ""
-for p in viewer_role.list_permissions():
-    viewer_role_perms += p.id + " "
+for p in viewer_role.list_permissions()['results']:
+    viewer_role_perms += p['objectId'] + " "
 print(f"Assigned permissions to [{viewer_role.id}] role: [{viewer_role_perms}]")
 
 # Assign roles & permissions to users:
@@ -135,24 +141,28 @@ print("---------- Pricing Tiers & Features ----------")
 enterprise_tier = warrant.PricingTier.create("enterprise")
 free_tier = warrant.PricingTier.create("free")
 print(f"Created pricing tiers: [{enterprise_tier.id}, {free_tier.id}]")
+free_tier.update({"name": "Free Tier"})
+print(f"Pricing tier updated: {free_tier.id} - {free_tier.meta}")
 
 # Create features
 analytics_feature = warrant.Feature.create("analytics")
 dashboard_feature = warrant.Feature.create("dashboard")
 print(f"Created features: [{analytics_feature.id}, {dashboard_feature.id}]")
+analytics_feature.update({"name": "Analytics"})
+print(f"Feature updated: {analytics_feature.id} - {analytics_feature.meta}")
 
 # Assign features to pricing tiers:
 # 'analytics' feature -> 'enterprise' tier
 # 'dashboard' feature -> 'free' tier
 enterprise_tier.assign_feature(analytics_feature.id)
 enterprise_tier_features = ""
-for f in enterprise_tier.list_features():
-    enterprise_tier_features += f.id + " "
+for f in enterprise_tier.list_features()['results']:
+    enterprise_tier_features += f['objectId'] + " "
 print(f"Assigned features to [{enterprise_tier.id}] tier: [{enterprise_tier_features}]")
 free_tier.assign_feature(dashboard_feature.id)
 free_tier_features = ""
-for f in free_tier.list_features():
-    free_tier_features += f.id + " "
+for f in free_tier.list_features()['results']:
+    free_tier_features += f['objectId'] + " "
 print(f"Assigned features to [{free_tier.id}] tier: [{free_tier_features}]")
 
 # Assign tiers to users:

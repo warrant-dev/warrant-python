@@ -1,51 +1,38 @@
-from warrant import APIResource, Permission, Subject, Warrant, constants
+from warrant import APIResource, Permission, Subject, Warrant, WarrantObject, constants
 
-
-class Role(APIResource):
-
-    def __init__(self, id, name, description):
+class Role(WarrantObject):
+    def __init__(self, id="", meta=None):
         self.id = id
-        self.name = name
-        self.description = description
+        WarrantObject.__init__(self, "role", id, meta)
 
     @classmethod
     def list(cls, list_params={}):
-        return cls._get("/v1/roles", params=list_params, object_hook=Role.from_json)
+        list_params['objectType'] = 'role'
+        list_result = WarrantObject.list(list_params)
+        roles = map(lambda warrant_obj: Role(warrant_obj.object_id, warrant_obj.meta), list_result['results'])
+        list_result['results'] = list(roles)
+        return list_result
 
     @classmethod
     def get(cls, id):
-        return cls._get("/v1/roles/"+id, params={}, object_hook=Role.from_json)
+        warrant_obj = WarrantObject.get("role", id)
+        return Role.from_warrant_obj(warrant_obj)
 
     @classmethod
-    def create(cls, id, name="", description=""):
-        payload = {
-            "roleId": id
-        }
-        if name != "":
-            payload["name"] = name
-        if description != "":
-            payload["description"] = description
-        return cls._post(uri="/v1/roles", json=payload, object_hook=Role.from_json)
-
-    def update(self, name, description):
-        payload = {
-            "name": name,
-            "description": description
-        }
-        updated_role = self._put(uri="/v1/roles/"+self.id, json=payload, object_hook=Role.from_json)
-        self.name = updated_role.name
-        self.description = updated_role.description
+    def create(cls, id="", meta={}):
+        warrant_obj = WarrantObject.create("role", id, meta)
+        return Role.from_warrant_obj(warrant_obj)
 
     @classmethod
     def delete(cls, id):
-        cls._delete(uri="/v1/roles/"+id, params={})
+        return WarrantObject.delete("role", id)
 
     """
     Users
     """
     @classmethod
     def list_for_user(cls, user_id, list_params={}):
-        return cls._get(uri="/v1/users/"+user_id+"/roles", params=list_params, object_hook=Role.from_json)
+        return Warrant.query("select role where user:"+user_id+" is *", list_params)
 
     @classmethod
     def assign_to_user(cls, user_id, role_id):
@@ -73,5 +60,15 @@ class Role(APIResource):
     JSON serialization/deserialization
     """
     @staticmethod
+    def from_warrant_obj(obj):
+        return Role(obj.object_id, obj.meta)
+
+    @staticmethod
     def from_json(obj):
-        return Role(obj["roleId"], obj["name"], obj["description"])
+        if "objectType" in obj and "objectId" in obj:
+            if "meta" in obj:
+                return Role(obj["objectId"], obj["meta"])
+            else:
+                return Role(obj["objectId"])
+        else:
+            return obj
