@@ -1,5 +1,4 @@
 from warrant import APIResource
-import json
 
 class WarrantObject(APIResource):
     def __init__(self, object_type, object_id, meta = None):
