@@ -40,10 +40,14 @@ class Warrant(APIResource):
                 "relation": subject.relation
             }
         else:
-            raise WarrantException(msg="Invalid type for \'subject\'. Must be of type Subject")
+            payload["subject"] = subject
         if policy != "":
             payload["policy"] = policy
-        cls._post(uri="/v1/warrants", json=payload)
+        return cls._post(uri="/v2/warrants", json=payload, object_hook=Warrant.from_json)
+
+    @classmethod
+    def batch_create(cls, warrants):
+        return cls._post(uri="/v2/warrants", json=warrants, object_hook=Warrant.from_json)
 
     @classmethod
     def query(cls, query, list_params={}):
@@ -66,10 +70,14 @@ class Warrant(APIResource):
                 "relation": subject.relation
             }
         else:
-            raise WarrantException(msg="Invalid type for \'subject\'. Must be of type Subject")
+            payload["subject"] = subject
         if policy != "":
             payload["policy"] = policy
-        cls._delete(uri="/v1/warrants", json=payload)
+        cls._delete(uri="/v2/warrants", json=payload)
+
+    @classmethod
+    def batch_delete(cls, warrants):
+        cls._delete(uri="/v2/warrants", json=warrants)
 
     """
     JSON serialization/deserialization

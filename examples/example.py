@@ -26,7 +26,7 @@ object2.update(meta={"description": "Folder for planning docs"})
 print(f"Updated object: {object2.object_type}:{object2.object_id} [{object2.meta}]")
 
 batch_objects = warrant.WarrantObject.batch_create([
-    {"objectType": "user", "objectId": "user-a"},
+    {"objectType": "user", "objectId": "user-test"},
     {"objectType": "tenant", "objectId": "tenant-a"},
     {"objectType": "org", "objectId": "org-a"},
 ])
@@ -223,6 +223,16 @@ print("Removed automatically created object user:test-user")
 warrant.WarrantObject.delete("permission", "test-permission")
 print("Removed automatically created object permission:test-permission")
 
+# Batch create warrants
+batch_warrants = warrant.Warrant.batch_create([
+    {"objectType": "role", "objectId": "manager", "relation": "member", "subject": {"objectType": "user", "objectId": "user-a"}},
+    {"objectType": "role", "objectId": "employee", "relation": "member", "subject": {"objectType": "user", "objectId": "user-b"}},
+    {"objectType": "role", "objectId": "support", "relation": "member", "subject": {"objectType": "user", "objectId": "user-c"}},
+])
+print("Batch created warrants:")
+for w in batch_warrants:
+    print(f"[{w.object_type}:{w.object_id} {w.relation} {w.subject.object_type}:{w.subject.object_id}]")
+
 # Query warrants
 query_result = warrant.Warrant.query("select explicit * where user:"+user1.id+" is member")
 print("Query warrants results:")
@@ -252,9 +262,21 @@ tenant1.remove_user(user1.id)
 warrant.Warrant.delete("tenant", tenant1.id, "admin", user2_subject)
 enterprise_tier.remove_feature(analytics_feature.id)
 free_tier.remove_feature(dashboard_feature.id)
+warrant.Warrant.batch_delete([
+    {"objectType": "role", "objectId": "manager", "relation": "member", "subject": {"objectType": "user", "objectId": "user-a"}},
+    {"objectType": "role", "objectId": "employee", "relation": "member", "subject": {"objectType": "user", "objectId": "user-b"}},
+    {"objectType": "role", "objectId": "support", "relation": "member", "subject": {"objectType": "user", "objectId": "user-c"}},
+])
+
 
 warrant.WarrantObject.batch_delete([
+    {"objectType": "role", "objectId": "manager"},
+    {"objectType": "role", "objectId": "employee"},
+    {"objectType": "role", "objectId": "support"},
     {"objectType": "user", "objectId": "user-a"},
+    {"objectType": "user", "objectId": "user-b"},
+    {"objectType": "user", "objectId": "user-c"},
+    {"objectType": "user", "objectId": "user-test"},
     {"objectType": "tenant", "objectId": "tenant-a"},
     {"objectType": "org", "objectId": "org-a"},
 ])
