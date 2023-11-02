@@ -29,6 +29,19 @@ class Authz(APIResource):
         return False
 
     @classmethod
+    def check_many(cls, op, warrants, opts={}):
+        payload = {
+            "op": op,
+            "warrants": warrants
+        }
+        json_resp = cls._post(uri="/v2/check", json=payload, opts=opts)
+        code = json_resp["code"]
+        result = json_resp["result"]
+        if result == "Authorized" and code == 200:
+            return True
+        return False
+
+    @classmethod
     def create_authorization_session(cls, user_id):
         payload = {
             "type": "sess",

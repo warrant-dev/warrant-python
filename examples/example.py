@@ -245,6 +245,14 @@ print("Batch created warrants:")
 for w in batch_warrants:
     print(f"[{w.object_type}:{w.object_id} {w.relation} {w.subject.object_type}:{w.subject.object_id}]")
 
+# Check multiple warrants at once
+batch_check_result = warrant.Authz.check_many("allOf", [
+    {"objectType": "role", "objectId": "manager", "relation": "member", "subject": {"objectType": "user", "objectId": "user-a"}},
+    {"objectType": "role", "objectId": "employee", "relation": "member", "subject": {"objectType": "user", "objectId": "user-b"}},
+    {"objectType": "role", "objectId": "support", "relation": "member", "subject": {"objectType": "user", "objectId": "user-c"}},
+])
+print(f"Checking all batch created warrants are authorized (should be true)? {batch_check_result}")
+
 # Query warrants
 query_result = warrant.Warrant.query("select explicit * where user:"+user1.id+" is member")
 print("Query warrants results:")
