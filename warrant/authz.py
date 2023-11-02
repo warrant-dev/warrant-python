@@ -5,7 +5,7 @@ from warrant import APIResource
 class Authz(APIResource):
 
     @classmethod
-    def check(cls, object_type, object_id, relation, subject, context={}):
+    def check(cls, object_type, object_id, relation, subject, context={}, opts={}):
         warrantToCheck = {
             "objectType": object_type,
             "objectId": object_id,
@@ -21,7 +21,7 @@ class Authz(APIResource):
             "op": "anyOf",
             "warrants": [warrantToCheck]
         }
-        json_resp = cls._post(uri="/v2/check", json=payload)
+        json_resp = cls._post(uri="/v2/check", json=payload, opts=opts)
         code = json_resp["code"]
         result = json_resp["result"]
         if result == "Authorized" and code == 200:

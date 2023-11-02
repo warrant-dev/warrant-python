@@ -7,69 +7,69 @@ class Tenant(WarrantObject):
         WarrantObject.__init__(self, "tenant", id, meta)
 
     @classmethod
-    def list(cls, list_params={}):
+    def list(cls, list_params={}, opts={}):
         list_params['objectType'] = 'tenant'
-        list_result = WarrantObject.list(list_params)
+        list_result = WarrantObject.list(list_params, opts=opts)
         tenants = map(lambda warrant_obj: Tenant(warrant_obj.object_id, warrant_obj.meta), list_result['results'])
         list_result['results'] = list(tenants)
         return list_result
 
     @classmethod
-    def get(cls, id):
-        warrant_obj = WarrantObject.get("tenant", id)
+    def get(cls, id, opts={}):
+        warrant_obj = WarrantObject.get("tenant", id, opts=opts)
         return Tenant.from_warrant_obj(warrant_obj)
 
     @classmethod
-    def create(cls, id="", meta={}):
-        warrant_obj = WarrantObject.create("tenant", id, meta)
+    def create(cls, id="", meta={}, opts={}):
+        warrant_obj = WarrantObject.create("tenant", id, meta, opts=opts)
         return Tenant.from_warrant_obj(warrant_obj)
 
     @classmethod
-    def delete(cls, id):
-        return WarrantObject.delete("tenant", id)
+    def delete(cls, id, opts={}):
+        return WarrantObject.delete("tenant", id, opts=opts)
 
     @classmethod
-    def list_for_user(cls, user_id, list_params={}):
-        return Warrant.query("select tenant where user:"+user_id+" is *", list_params)
+    def list_for_user(cls, user_id, list_params={}, opts={}):
+        return Warrant.query("select tenant where user:"+user_id+" is *", list_params, opts=opts)
 
     """
     Users
     """
-    def list_users(self, list_params={}):
-        return User.list_for_tenant(self.id, list_params)
+    def list_users(self, list_params={}, opts={}):
+        return User.list_for_tenant(self.id, list_params, opts=opts)
 
-    def assign_user(self, user_id):
-        User.assign_to_tenant(self.id, user_id)
+    def assign_user(self, user_id, opts={}):
+        User.assign_to_tenant(self.id, user_id, opts=opts)
 
-    def remove_user(self, user_id):
-        User.remove_from_tenant(self.id, user_id)
+    def remove_user(self, user_id, opts={}):
+        User.remove_from_tenant(self.id, user_id, opts=opts)
 
     """
     Pricing tiers
     """
-    def list_pricing_tiers(self, list_params={}):
-        return PricingTier.list_for_tenant(self.id, list_params)
+    def list_pricing_tiers(self, list_params={}, opts={}):
+        return PricingTier.list_for_tenant(self.id, list_params, opts=opts)
 
-    def assign_pricing_tier(self, pricing_tier_id):
-        PricingTier.assign_to_tenant(self.id, pricing_tier_id)
+    def assign_pricing_tier(self, pricing_tier_id, opts={}):
+        PricingTier.assign_to_tenant(self.id, pricing_tier_id, opts=opts)
 
-    def remove_pricing_tier(self, pricing_tier_id):
-        PricingTier.remove_from_tenant(self.id, pricing_tier_id)
+    def remove_pricing_tier(self, pricing_tier_id, opts={}):
+        PricingTier.remove_from_tenant(self.id, pricing_tier_id, opts=opts)
 
     """
     Features
     """
-    def list_features(self, list_params={}):
-        return Feature.list_for_tenant(self.id, list_params)
+    def list_features(self, list_params={}, opts={}):
+        return Feature.list_for_tenant(self.id, list_params, opts=opts)
 
-    def assign_feature(self, feature_id):
-        Feature.assign_to_tenant(self.id, feature_id)
+    def assign_feature(self, feature_id, opts={}):
+        Feature.assign_to_tenant(self.id, feature_id, opts=opts)
 
-    def remove_feature(self, feature_id):
-        Feature.remove_from_tenant(self.id, feature_id)
+    def remove_feature(self, feature_id, opts={}):
+        Feature.remove_from_tenant(self.id, feature_id, opts=opts)
 
-    def has_feature(self, feature_id):
-        return Authz.check("feature", feature_id, "member", Subject("user", self.id))
+    def has_feature(self, feature_id, opts={}):
+        return Authz.check("feature", feature_id, "member", Subject("user", self.id), opts=opts)
 
     """
     JSON serialization/deserialization

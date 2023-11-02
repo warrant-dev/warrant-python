@@ -27,7 +27,7 @@ class Warrant(APIResource):
         self.subject = obj["subject"]
 
     @classmethod
-    def create(cls, object_type, object_id, relation, subject, policy=""):
+    def create(cls, object_type, object_id, relation, subject, policy="", opts={}):
         payload = {
             "objectType": object_type,
             "objectId": object_id,
@@ -43,21 +43,21 @@ class Warrant(APIResource):
             payload["subject"] = subject
         if policy != "":
             payload["policy"] = policy
-        return cls._post(uri="/v2/warrants", json=payload, object_hook=Warrant.from_json)
+        return cls._post(uri="/v2/warrants", json=payload, opts=opts, object_hook=Warrant.from_json)
 
     @classmethod
-    def batch_create(cls, warrants):
-        return cls._post(uri="/v2/warrants", json=warrants, object_hook=Warrant.from_json)
+    def batch_create(cls, warrants, opts={}):
+        return cls._post(uri="/v2/warrants", json=warrants, opts=opts, object_hook=Warrant.from_json)
 
     @classmethod
-    def query(cls, query, list_params={}):
+    def query(cls, query, list_params={}, opts={}):
         params = {
             "q": query,
         } | list_params
-        return cls._get(uri="/v2/query", params=params)
+        return cls._get(uri="/v2/query", params=params, opts=opts)
 
     @classmethod
-    def delete(cls, object_type, object_id, relation, subject, policy=""):
+    def delete(cls, object_type, object_id, relation, subject, policy="", opts={}):
         payload = {
             "objectType": object_type,
             "objectId": object_id,
@@ -73,7 +73,7 @@ class Warrant(APIResource):
             payload["subject"] = subject
         if policy != "":
             payload["policy"] = policy
-        cls._delete(uri="/v2/warrants", json=payload)
+        cls._delete(uri="/v2/warrants", json=payload, opts=opts)
 
     @classmethod
     def batch_delete(cls, warrants):

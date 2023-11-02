@@ -20,7 +20,7 @@ print("---------- Objects ----------")
 object1 = warrant.WarrantObject.create(object_type="document")
 object2 = warrant.WarrantObject.create(object_type="folder", object_id="planning")
 print(f"Created objects: [{object1.object_type}:{object1.object_id} {object2.object_type}:{object2.object_id}]")
-object1 = warrant.WarrantObject.get(object1.object_type, object1.object_id)
+object1 = warrant.WarrantObject.get(object1.object_type, object1.object_id, opts={"Warrant-Token": "latest"})
 print(f"Fetched object: {object1.object_type}:{object1.object_id}")
 object2.update(meta={"description": "Folder for planning docs"})
 print(f"Updated object: {object2.object_type}:{object2.object_id} [{object2.meta}]")
@@ -32,7 +32,7 @@ batch_objects = warrant.WarrantObject.batch_create([
 ])
 print(f"Batch created objects: {batch_objects}")
 
-objects_list = warrant.WarrantObject.list({"limit": 2})
+objects_list = warrant.WarrantObject.list({"limit": 10}, opts={"Warrant-Token": "latest"})
 print(f"List objects: {objects_list}")
 
 """
@@ -43,6 +43,8 @@ print("---------- Users & Tenants ----------")
 user1 = warrant.User.create()
 user2 = warrant.User.create(id="custom_user_id_1")
 print(f"Created users: [{user1.id}, {user2.id}]")
+user2 = warrant.User.get(user2.id, opts={"Warrant-Token": "latest"})
+print(f"Fetched user: {user2.id}")
 user2.update({"email":"newemail@test.com"})
 print(f"User updated: {user2.id} - {user2.meta}")
 
@@ -50,6 +52,8 @@ print(f"User updated: {user2.id} - {user2.meta}")
 tenant1 = warrant.Tenant.create(id="dunder_mifflin")
 tenant2 = warrant.Tenant.create(id="big_box_paper")
 print(f"Created tenants: [{tenant1.id}, {tenant2.id}]")
+tenant1 = warrant.Tenant.get(tenant1.id, opts={"Warrant-Token": "latest"})
+print(f"Fetched tenant: {tenant1.id}")
 tenant1.update({"name": "Dunder Mifflin"})
 print(f"Updated tenant: {tenant1.id} - {tenant1.meta}")
 tenant1.assign_user(user1.id)
@@ -58,11 +62,11 @@ user2_subject = warrant.Subject("user", user2.id)
 warrant.Warrant.create("tenant", tenant1.id, "admin", user2_subject)
 print(f"Assigned user [{user2.id}] as admin to tenant [{tenant2.id}]")
 tenant1_users = ""
-for u in tenant1.list_users()['results']:
+for u in tenant1.list_users(opts={"Warrant-Token": "latest"})['results']:
     tenant1_users += u['objectId'] + " "
 print(f"Verify users for [{tenant1.id}]: [{tenant1_users}]")
 tenant2_users = ""
-for u in tenant2.list_users()['results']:
+for u in tenant2.list_users(opts={"Warrant-Token": "latest"})['results']:
     tenant2_users += u['objectId'] + " "
 print(f"Verify users for [{tenant2.id}]: [{tenant2_users}]")
 print("\n")
@@ -76,10 +80,12 @@ print("---------- Role Based Access Control ----------")
 admin_role = warrant.Role.create(id="admin1")
 viewer_role = warrant.Role.create(id="viewer")
 print(f"Created roles: [{admin_role.id}, {viewer_role.id}]")
+admin_role = warrant.Role.get(admin_role.id, opts={"Warrant-Token": "latest"})
+print(f"Fetched role: {admin_role.id}")
 admin_role.update({"name": "Admin", "description": "Administrator role"})
 print(f"Updated admin role: {admin_role.id} - {admin_role.meta}")
 
-roles_list = warrant.Role.list({"limit": 10})
+roles_list = warrant.Role.list({"limit": 10}, opts={"Warrant-Token": "latest"})
 print(f"List roles: {roles_list}")
 
 # Create permissions
@@ -88,10 +94,12 @@ delete_report_perm = warrant.Permission.create(id="delete_report")
 view_report_perm = warrant.Permission.create(id="view_report")
 special_perm = warrant.Permission.create(id="special_perm")
 print(f"Created permissions: [{create_report_perm.id}, {delete_report_perm.id}, {view_report_perm.id}, {special_perm.id}]")
+create_report_perm = warrant.Permission.get(create_report_perm.id, opts={"Warrant-Token": "latest"})
+print(f"Fetched permission: {create_report_perm.id}")
 create_report_perm.update({"name": "Create Report", "description": "Permission for creating reports"})
 print(f"Updated create report permission: {create_report_perm.id} - {create_report_perm.meta}")
 
-permissions_list = warrant.Permission.list({"limit": 10})
+permissions_list = warrant.Permission.list({"limit": 10}, opts={"Warrant-Token": "latest"})
 print(f"List permissions: {permissions_list}")
 
 # Assign permissions to roles:
@@ -101,12 +109,12 @@ admin_role.assign_permission(create_report_perm.id)
 admin_role.assign_permission(delete_report_perm.id)
 admin_role.assign_permission(view_report_perm.id)
 admin_role_perms = ""
-for p in admin_role.list_permissions()['results']:
+for p in admin_role.list_permissions(opts={"Warrant-Token": "latest"})['results']:
     admin_role_perms += p['objectId'] + " "
 print(f"Assigned permissions to [{admin_role.id}] role: [{admin_role_perms}]")
 viewer_role.assign_permission(view_report_perm.id)
 viewer_role_perms = ""
-for p in viewer_role.list_permissions()['results']:
+for p in viewer_role.list_permissions(opts={"Warrant-Token": "latest"})['results']:
     viewer_role_perms += p['objectId'] + " "
 print(f"Assigned permissions to [{viewer_role.id}] role: [{viewer_role_perms}]")
 
@@ -141,6 +149,8 @@ print("---------- Pricing Tiers & Features ----------")
 enterprise_tier = warrant.PricingTier.create("enterprise")
 free_tier = warrant.PricingTier.create("free")
 print(f"Created pricing tiers: [{enterprise_tier.id}, {free_tier.id}]")
+free_tier = warrant.PricingTier.get(free_tier.id, opts={"Warrant-Token": "latest"})
+print(f"Fetched tier: {free_tier.id}")
 free_tier.update({"name": "Free Tier"})
 print(f"Pricing tier updated: {free_tier.id} - {free_tier.meta}")
 
@@ -148,6 +158,8 @@ print(f"Pricing tier updated: {free_tier.id} - {free_tier.meta}")
 analytics_feature = warrant.Feature.create("analytics")
 dashboard_feature = warrant.Feature.create("dashboard")
 print(f"Created features: [{analytics_feature.id}, {dashboard_feature.id}]")
+analytics_feature = warrant.Feature.get(analytics_feature.id, opts={"Warrant-Token": "latest"})
+print(f"Fetched feature: {analytics_feature.id}")
 analytics_feature.update({"name": "Analytics"})
 print(f"Feature updated: {analytics_feature.id} - {analytics_feature.meta}")
 
@@ -156,12 +168,12 @@ print(f"Feature updated: {analytics_feature.id} - {analytics_feature.meta}")
 # 'dashboard' feature -> 'free' tier
 enterprise_tier.assign_feature(analytics_feature.id)
 enterprise_tier_features = ""
-for f in enterprise_tier.list_features()['results']:
+for f in enterprise_tier.list_features(opts={"Warrant-Token": "latest"})['results']:
     enterprise_tier_features += f['objectId'] + " "
 print(f"Assigned features to [{enterprise_tier.id}] tier: [{enterprise_tier_features}]")
 free_tier.assign_feature(dashboard_feature.id)
 free_tier_features = ""
-for f in free_tier.list_features()['results']:
+for f in free_tier.list_features(opts={"Warrant-Token": "latest"})['results']:
     free_tier_features += f['objectId'] + " "
 print(f"Assigned features to [{free_tier.id}] tier: [{free_tier_features}]")
 
@@ -195,26 +207,26 @@ print("Created authorization session token for user [" + user2.id + "]: " + warr
 print("\n")
 
 
-"""
-Create and query your own warrants
-"""
+# """
+# Create and query your own warrants
+# """
 print("---------- Create & Query Warrants ----------")
 permission1 = warrant.Permission.create(id="permission1")
 user1_subject = warrant.Subject("user", user1.id)
-result = warrant.Authz.check("permission", "permission1", "member", user1_subject)
+result = warrant.Authz.check("permission", "permission1", "member", user1_subject, opts={"Warrant-Token": "latest"})
 print(f"Does [{user1.id}] have the [permission1] permission? (should be false) -> {result}")
 warrant.Warrant.create("permission", "permission1", "member", user1_subject)
 print("Manually assigned [permission1] permission to [" + user1.id + "]")
-result = warrant.Authz.check("permission", "permission1", "member", user1_subject)
+result = warrant.Authz.check("permission", "permission1", "member", user1_subject, opts={"Warrant-Token": "latest"})
 print(f"Does [{user1.id}] have the [permission1] permission? (should be true) -> {result}")
 
 # Create, check, and delete warrant with a policy
 test_user_subject = warrant.Subject("user", "test-user")
 warrant.Warrant.create("permission", "test-permission", "member", test_user_subject, "geo == 'us'")
 print("Manually assigned [test-permission] permission to test-user with the context [geo == 'us']")
-result = warrant.Authz.check("permission", "test-permission", "member", test_user_subject, {"geo": "us"})
+result = warrant.Authz.check("permission", "test-permission", "member", test_user_subject, {"geo": "us"}, opts={"Warrant-Token": "latest"})
 print(f"Does test-user have the [test-permission] permission with the following context [geo == 'us']? (should be true) -> {result}")
-result = warrant.Authz.check("permission", "test-permission", "member", test_user_subject, {"geo": "eu"})
+result = warrant.Authz.check("permission", "test-permission", "member", test_user_subject, {"geo": "eu"}, opts={"Warrant-Token": "latest"})
 print(f"Does test-user have the [test-permission] permission with the following context [geo == 'eu']? (should be false) -> {result}")
 warrant.Warrant.delete("permission", "test-permission", "member", test_user_subject, "geo == 'us'")
 print("Manually removed [test-permission] permission from test-user with the context [geo == 'us']")
@@ -241,7 +253,7 @@ for w in query_result['results']:
 
 warrant.Warrant.delete("permission", "permission1", "member", user1_subject)
 print("Manually removed [permission1] permission from [" + user1.id + "]")
-result = warrant.Authz.check("permission", "permission1", "member", user1_subject)
+result = warrant.Authz.check("permission", "permission1", "member", user1_subject, opts={"Warrant-Token": "latest"})
 print(f"Does [{user1.id}] have the [permission1] permission? (should be false) -> {result}")
 print("\n")
 
@@ -260,6 +272,8 @@ admin_role.remove_permission(view_report_perm.id)
 viewer_role.remove_permission(view_report_perm.id)
 tenant1.remove_user(user1.id)
 warrant.Warrant.delete("tenant", tenant1.id, "admin", user2_subject)
+user1.remove_pricing_tier(enterprise_tier.id)
+user2.remove_pricing_tier(free_tier.id)
 enterprise_tier.remove_feature(analytics_feature.id)
 free_tier.remove_feature(dashboard_feature.id)
 warrant.Warrant.batch_delete([
