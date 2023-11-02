@@ -1,7 +1,7 @@
 from warrant import APIResource
 
 class WarrantObject(APIResource):
-    def __init__(self, object_type, object_id, meta = None):
+    def __init__(self, object_type, object_id, meta=None):
         self.object_type = object_type
         self.object_id = object_id
         if meta is None:
@@ -22,11 +22,11 @@ class WarrantObject(APIResource):
             payload["objectId"] = object_id
         if meta != {}:
             payload["meta"] = meta
-        return cls._post(uri="/v2/objects", json=payload, opts=opts, object_hook=WarrantObject.from_json)
+        return cls._post(uri="/v2/objects", json_payload=payload, opts=opts, object_hook=WarrantObject.from_json)
 
     @classmethod
     def batch_create(cls, objects, opts={}):
-        return cls._post(uri="/v2/objects", json=objects, opts=opts, object_hook=WarrantObject.from_json)
+        return cls._post(uri="/v2/objects", json_payload=objects, opts=opts, object_hook=WarrantObject.from_json)
 
     @classmethod
     def get(cls, object_type, object_id, opts={}):
@@ -36,7 +36,7 @@ class WarrantObject(APIResource):
         payload = {
             "meta": meta
         }
-        updated_obj = self._put(uri="/v2/objects/"+self.object_type+"/"+self.object_id, json=payload, opts=opts, object_hook=WarrantObject.from_json)
+        updated_obj = self._put(uri="/v2/objects/"+self.object_type+"/"+self.object_id, json_payload=payload, opts=opts, object_hook=WarrantObject.from_json)
         self.meta = updated_obj.meta
 
     @classmethod

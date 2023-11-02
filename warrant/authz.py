@@ -21,7 +21,7 @@ class Authz(APIResource):
             "op": "anyOf",
             "warrants": [warrantToCheck]
         }
-        json_resp = cls._post(uri="/v2/check", json=payload, opts=opts)
+        json_resp = cls._post(uri="/v2/check", json_payload=payload, opts=opts)
         code = json_resp["code"]
         result = json_resp["result"]
         if result == "Authorized" and code == 200:
@@ -34,7 +34,7 @@ class Authz(APIResource):
             "op": op,
             "warrants": warrants
         }
-        json_resp = cls._post(uri="/v2/check", json=payload, opts=opts)
+        json_resp = cls._post(uri="/v2/check", json_payload=payload, opts=opts)
         code = json_resp["code"]
         result = json_resp["result"]
         if result == "Authorized" and code == 200:
@@ -47,7 +47,7 @@ class Authz(APIResource):
             "type": "sess",
             "userId": user_id
         }
-        json = cls._post(uri="/v1/sessions", json=payload)
+        json = cls._post(uri="/v2/sessions", json_payload=payload)
         return json["token"]
 
     @classmethod
@@ -58,6 +58,6 @@ class Authz(APIResource):
             "tenantId": tenant_id,
             "selfServiceStrategy": self_service_strategy,
         }
-        json = cls._post(uri="/v1/sessions", json=payload)
+        json = cls._post(uri="/v2/sessions", json_payload=payload)
         token = json["token"]
         return f"{warrant.self_service_dashboard_base_url}/{token}?redirectUrl={redirect_url}"
