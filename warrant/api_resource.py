@@ -1,6 +1,7 @@
 import requests
 import warrant
 import json
+from typing import Any, Dict, List, Optional
 
 
 class WarrantException(Exception):
@@ -16,7 +17,7 @@ class APIResource(object):
     session = requests.Session()
 
     @classmethod
-    def _get(cls, uri, params={}, opts={}, object_hook=None):
+    def _get(cls, uri, params={}, opts: Dict[str, Any] = {}, object_hook=None):
         headers = {
             "User-Agent": warrant.user_agent
         }
@@ -31,7 +32,7 @@ class APIResource(object):
             raise WarrantException(msg=resp.text, status_code=resp.status_code)
 
     @classmethod
-    def _post(cls, uri, json_payload={}, opts={}, object_hook=None):
+    def _post(cls, uri, json_payload={}, opts: Dict[str, Any] = {}, object_hook=None):
         headers = {
             "User-Agent": warrant.user_agent
         }
@@ -54,7 +55,7 @@ class APIResource(object):
             raise WarrantException(msg=resp.text, status_code=resp.status_code)
 
     @classmethod
-    def _put(cls, uri, json_payload={}, opts={}, object_hook=None):
+    def _put(cls, uri, json_payload={}, opts: Dict[str, Any] = {}, object_hook=None):
         headers = {
             "User-Agent": warrant.user_agent
         }
@@ -77,7 +78,7 @@ class APIResource(object):
             raise WarrantException(msg=resp.text, status_code=resp.status_code)
 
     @classmethod
-    def _delete(cls, uri, params={}, opts={}, json={}):
+    def _delete(cls, uri, params={}, opts: Dict[str, Any] = {}, json={}):
         headers = {
             "User-Agent": warrant.user_agent
         }
