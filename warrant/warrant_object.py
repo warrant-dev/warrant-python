@@ -1,6 +1,7 @@
 from warrant import APIResource, ListResult
 from typing import Any, Dict, List, Optional
 
+
 class WarrantObject(APIResource):
     def __init__(self, object_type: str, object_id: str, meta: Dict[str, Any] = {}) -> None:
         self.object_type = object_type
@@ -14,9 +15,9 @@ class WarrantObject(APIResource):
     @classmethod
     def list(cls, params: Dict[str, Any] = {}, opts: Dict[str, Any] = {}) -> ListResult["WarrantObject"]:
         if params is None:
-            params={}
+            params = {}
         if opts is None:
-            opts={}
+            opts = {}
         list_result = cls._get(uri="/v2/objects", params=params, opts=opts, object_hook=WarrantObject.from_json)
         if "prevCursor" in list_result and "nextCursor" in list_result:
             return ListResult[WarrantObject](list_result['results'], list_result['prevCursor'], list_result['nextCursor'])

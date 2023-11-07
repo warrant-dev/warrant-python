@@ -33,7 +33,10 @@ class Tenant(WarrantObject):
 
     @classmethod
     def batch_create(cls, tenants: List[Dict[str, Any]], opts: Dict[str, Any] = {}) -> List["Tenant"]:
-        objects = map(lambda tenant: {"objectType": "tenant", "objectId": tenant['tenantId'], "meta": tenant['meta']} if "meta" in tenant.keys() else {"objectType": "tenant", "objectId": tenant['tenantId']}, tenants)
+        objects = map(
+            lambda tenant: {"objectType": "tenant", "objectId": tenant['tenantId'], "meta": tenant['meta']} if "meta" in tenant.keys() else {"objectType": "tenant", "objectId": tenant['tenantId']},
+            tenants
+        )
         created_objects = WarrantObject.batch_create(list(objects), opts)
         created_tenants = map(lambda warrant_obj: Tenant(warrant_obj.object_id, warrant_obj.meta), created_objects)
         return list(created_tenants)

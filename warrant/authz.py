@@ -3,12 +3,13 @@ from warrant import APIResource, Subject
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
+
 class CheckOp(str, Enum):
     ANY_OF = "anyOf"
     ALL_OF = "allOf"
 
-class Authz(APIResource):
 
+class Authz(APIResource):
     @classmethod
     def check(cls, object_type: str, object_id: str, relation: str, subject, context: Dict[str, Any] = {}, opts: Dict[str, Any] = {}) -> bool:
         warrantToCheck = {

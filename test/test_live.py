@@ -1,6 +1,7 @@
 import warrant
 import unittest
 
+
 class LiveTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -686,16 +687,16 @@ class LiveTest(unittest.TestCase):
         user_has_permissions = warrant.Authz.check_many(
             warrant.CheckOp.ALL_OF,
             [
-                {"objectType": permission1.object_type, "objectId": permission1.id, "relation": "member", "subject":{"objectType": new_user.object_type, "objectId": new_user.id}},
-                {"objectType": permission2.object_type, "objectId": permission2.id, "relation": "member", "subject":{"objectType": new_user.object_type, "objectId": new_user.id}}
+                {"objectType": permission1.object_type, "objectId": permission1.id, "relation": "member", "subject": {"objectType": new_user.object_type, "objectId": new_user.id}},
+                {"objectType": permission2.object_type, "objectId": permission2.id, "relation": "member", "subject": {"objectType": new_user.object_type, "objectId": new_user.id}}
             ],
             opts={"Warrant-Token": "latest"}
         )
         self.assertEqual(user_has_permissions, False)
 
         warrants = warrant.Warrant.batch_create([
-            {"objectType": permission1.object_type, "objectId": permission1.id, "relation": "member", "subject":{"objectType": new_user.object_type, "objectId": new_user.id}},
-            {"objectType": permission2.object_type, "objectId": permission2.id, "relation": "member", "subject":{"objectType": new_user.object_type, "objectId": new_user.id}}
+            {"objectType": permission1.object_type, "objectId": permission1.id, "relation": "member", "subject": {"objectType": new_user.object_type, "objectId": new_user.id}},
+            {"objectType": permission2.object_type, "objectId": permission2.id, "relation": "member", "subject": {"objectType": new_user.object_type, "objectId": new_user.id}}
         ])
         self.assertEqual(len(warrants), 2)
 
@@ -720,16 +721,16 @@ class LiveTest(unittest.TestCase):
         user_has_permissions = warrant.Authz.check_many(
             warrant.CheckOp.ALL_OF,
             [
-                {"objectType": permission1.object_type, "objectId": permission1.id, "relation": "member", "subject":{"objectType": new_user.object_type, "objectId": new_user.id}},
-                {"objectType": permission2.object_type, "objectId": permission2.id, "relation": "member", "subject":{"objectType": new_user.object_type, "objectId": new_user.id}}
+                {"objectType": permission1.object_type, "objectId": permission1.id, "relation": "member", "subject": {"objectType": new_user.object_type, "objectId": new_user.id}},
+                {"objectType": permission2.object_type, "objectId": permission2.id, "relation": "member", "subject": {"objectType": new_user.object_type, "objectId": new_user.id}}
             ],
             opts={"Warrant-Token": "latest"}
         )
         self.assertEqual(user_has_permissions, True)
 
         warrant.Warrant.batch_delete([
-            {"objectType": permission1.object_type, "objectId": permission1.id, "relation": "member", "subject":{"objectType": new_user.object_type, "objectId": new_user.id}},
-            {"objectType": permission2.object_type, "objectId": permission2.id, "relation": "member", "subject":{"objectType": new_user.object_type, "objectId": new_user.id}}
+            {"objectType": permission1.object_type, "objectId": permission1.id, "relation": "member", "subject": {"objectType": new_user.object_type, "objectId": new_user.id}},
+            {"objectType": permission2.object_type, "objectId": permission2.id, "relation": "member", "subject": {"objectType": new_user.object_type, "objectId": new_user.id}}
         ])
         warrant.WarrantObject.batch_delete([
             {"objectType": permission1.object_type, "objectId": permission1.id},

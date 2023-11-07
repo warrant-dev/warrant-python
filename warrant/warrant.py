@@ -1,6 +1,7 @@
 from warrant import APIResource, WarrantException, ListResult
 from typing import Any, Dict, List, Optional
 
+
 class Subject(object):
     def __init__(self, object_type, object_id, relation=""):
         self.object_type = object_type
@@ -36,7 +37,6 @@ class QueryResult:
                 return QueryResult(obj["objectType"], obj["objectId"], obj["warrant"], obj["isImplicit"])
         else:
             return obj
-
 
 
 class Warrant(APIResource):

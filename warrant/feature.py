@@ -1,6 +1,7 @@
 from warrant import APIResource, Subject, Warrant, WarrantObject, constants, ListResult
 from typing import Any, Dict, List, Optional
 
+
 class Feature(WarrantObject):
     def __init__(self, id: str = "", meta: Dict[str, Any] = {}) -> None:
         self.id = id

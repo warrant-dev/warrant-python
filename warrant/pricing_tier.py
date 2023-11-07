@@ -35,7 +35,6 @@ class PricingTier(WarrantObject):
     def delete(cls, id: str, opts: Dict[str, Any] = {}):
         return WarrantObject.delete("pricing-tier", id, opts=opts)
 
-
     """
     Features
     """
