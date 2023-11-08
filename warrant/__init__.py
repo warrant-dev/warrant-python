@@ -15,6 +15,6 @@ from warrant.tenant import Tenant
 __version__ = "2.2.0"
 
 api_key = ""
-api_endpoint = "http://localhost:8000"
+api_endpoint = "https://api.warrant.dev"
 self_service_dashboard_base_url = "https://self-serve.warrant.dev"
 user_agent = "warrant-python/" + __version__

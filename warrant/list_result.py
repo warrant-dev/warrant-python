@@ -8,7 +8,3 @@ class ListResult(Generic[T]):
         self.results = results
         self.prev_cursor = prev_cursor
         self.next_cursor = next_cursor
-
-    # @staticmethod
-    # def from_json(obj):
-    #     return

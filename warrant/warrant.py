@@ -89,7 +89,6 @@ class Warrant(APIResource):
             "q": query,
         } | list_params
         query_result = cls._get(uri="/v2/query", params=params, opts=opts, object_hook=QueryResult.from_json)
-        print(f"queryResult: {query_result}")
         if "prevCursor" in query_result and "nextCursor" in query_result:
             return ListResult[QueryResult](query_result['results'], query_result['prevCursor'], query_result['nextCursor'])
         elif "prevCursor" in query_result:

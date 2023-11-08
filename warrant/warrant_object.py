@@ -6,10 +6,6 @@ class WarrantObject(APIResource):
     def __init__(self, object_type: str, object_id: str, meta: Dict[str, Any] = {}) -> None:
         self.object_type = object_type
         self.object_id = object_id
-        # if meta is None:
-        #     self.meta = {}
-        # else:
-        #     self.meta = meta
         self.meta = meta
 
     @classmethod

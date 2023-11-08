@@ -645,7 +645,7 @@ class LiveTest(unittest.TestCase):
         self.assertEqual(len(response.results), 1)
         self.assertEqual(response.results[0].object_type, "permission")
         self.assertEqual(response.results[0].object_id, "perm1")
-        self.assertEqual(response.results[0].warrant['relation'], "member")
+        self.assertEqual(response.results[0].warrant.relation, "member")
 
         warrant.Warrant.delete(new_permission.object_type, new_permission.id, "member", {"objectType": new_user.object_type, "objectId": new_user.id})
 
