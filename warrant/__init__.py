@@ -12,7 +12,7 @@ from warrant.role import Role
 from warrant.user import User
 from warrant.tenant import Tenant
 
-__version__ = "2.2.0"
+__version__ = "3.0.0"
 
 api_key = ""
 api_endpoint = "https://api.warrant.dev"
