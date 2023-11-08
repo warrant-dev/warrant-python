@@ -1,4 +1,5 @@
-from warrant import APIResource, WarrantException
+from warrant import APIResource, WarrantException, ListResult
+from typing import Any, Dict, List, Optional
 
 
 class Subject(object):
@@ -18,16 +19,49 @@ class Subject(object):
         return Subject(obj["objectType"], obj["objectId"], relation)
 
 
+class QueryResult:
+    def __init__(self, object_type: str, object_id: str, warrant: "Warrant", is_implicit: bool, meta: Dict[str, Any] = {}):
+        self.object_type = object_type
+        self.object_id = object_id
+        self.warrant = warrant
+        self.is_implicit = is_implicit
+        self.meta = meta
+
+    @staticmethod
+    def from_json(obj):
+        if "warrant" in obj:
+            if "meta" in obj:
+                return QueryResult(obj["objectType"], obj["objectId"], obj["warrant"], obj["isImplicit"], obj["meta"])
+            else:
+                return QueryResult(obj["objectType"], obj["objectId"], obj["warrant"], obj["isImplicit"])
+        elif "subject" in obj:
+            return Warrant(obj)
+        elif "objectType" in obj and "objectId" in obj:
+            relation = ""
+            if "relation" in obj.keys():
+                relation = obj["relation"]
+            return Subject(obj["objectType"], obj["objectId"], relation)
+        else:
+            return obj
+
+
 class Warrant(APIResource):
+    object_type: str
+    object_id: str
+    relation: str
+    subject: Subject
+    warrant_token: Optional[str]
 
     def __init__(self, obj):
         self.object_type = obj["objectType"]
         self.object_id = obj["objectId"]
         self.relation = obj["relation"]
         self.subject = obj["subject"]
+        if "warrantToken" in obj:
+            self.warrant_token = obj["warrantToken"]
 
     @classmethod
-    def create(cls, object_type, object_id, relation, subject, policy=""):
+    def create(cls, object_type, object_id, relation, subject, policy="", opts: Dict[str, Any] = {}) -> "Warrant":
         payload = {
             "objectType": object_type,
             "objectId": object_id,
@@ -40,22 +74,32 @@ class Warrant(APIResource):
                 "relation": subject.relation
             }
         else:
-            raise WarrantException(msg="Invalid type for \'subject\'. Must be of type Subject")
+            payload["subject"] = subject
         if policy != "":
             payload["policy"] = policy
-        cls._post(uri="/v1/warrants", json=payload)
+        return cls._post(uri="/v2/warrants", json_payload=payload, opts=opts, object_hook=Warrant.from_json)
 
     @classmethod
-    def query(cls, select, for_clause, where):
+    def batch_create(cls, warrants, opts: Dict[str, Any] = {}):
+        return cls._post(uri="/v2/warrants", json_payload=warrants, opts=opts, object_hook=Warrant.from_json)
+
+    @classmethod
+    def query(cls, query, list_params={}, opts: Dict[str, Any] = {}) -> ListResult[QueryResult]:
         params = {
-            "select": select,
-            "for": for_clause,
-            "where": where,
-        }
-        return cls._get(uri="/v1/query", params=params, object_hook=Warrant.from_json)
+            "q": query,
+        } | list_params
+        query_result = cls._get(uri="/v2/query", params=params, opts=opts, object_hook=QueryResult.from_json)
+        if "prevCursor" in query_result and "nextCursor" in query_result:
+            return ListResult[QueryResult](query_result['results'], query_result['prevCursor'], query_result['nextCursor'])
+        elif "prevCursor" in query_result:
+            return ListResult[QueryResult](query_result['results'], query_result['prevCursor'])
+        elif "nextCursor" in query_result:
+            return ListResult[QueryResult](query_result['results'], next_cursor=query_result['nextCursor'])
+        else:
+            return ListResult[QueryResult](query_result['results'])
 
     @classmethod
-    def delete(cls, object_type, object_id, relation, subject, policy=""):
+    def delete(cls, object_type, object_id, relation, subject, policy="", opts: Dict[str, Any] = {}):
         payload = {
             "objectType": object_type,
             "objectId": object_id,
@@ -68,10 +112,14 @@ class Warrant(APIResource):
                 "relation": subject.relation
             }
         else:
-            raise WarrantException(msg="Invalid type for \'subject\'. Must be of type Subject")
+            payload["subject"] = subject
         if policy != "":
             payload["policy"] = policy
-        cls._delete(uri="/v1/warrants", json=payload)
+        return cls._delete(uri="/v2/warrants", json=payload, opts=opts)
+
+    @classmethod
+    def batch_delete(cls, warrants):
+        return cls._delete(uri="/v2/warrants", json=warrants)
 
     """
     JSON serialization/deserialization

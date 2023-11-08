@@ -1,6 +1,8 @@
 from warrant.api_resource import APIResource, WarrantException
-from warrant.warrant import Warrant, Subject
-from warrant.authz import Authz
+from warrant.list_result import ListResult
+from warrant.warrant_object import WarrantObject
+from warrant.warrant import Warrant, Subject, QueryResult
+from warrant.authz import Authz, CheckOp
 
 from warrant.feature import Feature
 from warrant.permission import Permission
