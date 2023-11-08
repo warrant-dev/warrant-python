@@ -1,5 +1,5 @@
-from warrant import APIResource, WarrantException, ListResult
-from typing import Any, Dict, List, Optional
+from warrant import APIResource, ListResult
+from typing import Any, Dict, Optional
 
 
 class Subject(object):

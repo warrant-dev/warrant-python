@@ -1,5 +1,5 @@
-from warrant import APIResource, Subject, Warrant, Object, constants, ListResult
-from typing import Any, Dict, List, Optional
+from warrant import Subject, Warrant, Object, constants, ListResult
+from typing import Any, Dict, Optional
 
 
 class Permission(Object):
