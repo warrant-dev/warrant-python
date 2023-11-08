@@ -1,4 +1,4 @@
-from warrant import APIResource, PricingTier, Feature, User, Authz, Subject, Warrant, Object, ListResult
+from warrant import PricingTier, Feature, User, Authz, Subject, Warrant, Object, ListResult
 from typing import Any, Dict, List, Optional
 
 

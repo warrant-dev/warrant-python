@@ -1,5 +1,5 @@
-from warrant import APIResource, PricingTier, Feature, Role, Permission, Authz, Subject, Warrant, Object, constants, ListResult
-from typing import Any, Dict, List, Optional, Sequence
+from warrant import PricingTier, Feature, Role, Permission, Authz, Subject, Warrant, Object, constants, ListResult
+from typing import Any, Dict, List, Optional
 
 
 class User(Object):

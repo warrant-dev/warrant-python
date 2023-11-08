@@ -1,5 +1,5 @@
-from warrant import APIResource, Feature, Subject, Warrant, Object, constants, ListResult
-from typing import Any, Dict, List, Optional
+from warrant import Feature, Subject, Warrant, Object, constants, ListResult
+from typing import Any, Dict
 
 
 class PricingTier(Object):

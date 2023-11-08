@@ -1,5 +1,5 @@
-from warrant import APIResource, Permission, Subject, Warrant, Object, constants, ListResult
-from typing import Any, Dict, List, Optional
+from warrant import Permission, Subject, Warrant, Object, constants, ListResult
+from typing import Any, Dict, Optional
 
 
 class Role(Object):
