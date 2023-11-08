@@ -1,16 +1,16 @@
-from warrant import APIResource, Permission, Subject, Warrant, WarrantObject, constants, ListResult
+from warrant import APIResource, Permission, Subject, Warrant, Object, constants, ListResult
 from typing import Any, Dict, List, Optional
 
 
-class Role(WarrantObject):
+class Role(Object):
     def __init__(self, id: str = "", meta: Dict[str, Any] = {}) -> None:
         self.id = id
-        WarrantObject.__init__(self, "role", id, meta)
+        Object.__init__(self, "role", id, meta)
 
     @classmethod
     def list(cls, list_params: Dict[str, Any] = {}, opts: Dict[str, Any] = {}):
         list_params['objectType'] = 'role'
-        list_result = WarrantObject.list(list_params, opts=opts)
+        list_result = Object.list(list_params, opts=opts)
         roles = map(lambda warrant_obj: Role(warrant_obj.object_id, warrant_obj.meta), list_result.results)
         if list_result.prev_cursor != "" and list_result.next_cursor != "":
             return ListResult[Role](list(roles), list_result.prev_cursor, list_result.next_cursor)
@@ -23,17 +23,17 @@ class Role(WarrantObject):
 
     @classmethod
     def get(cls, id: str, opts: Dict[str, Any] = {}) -> "Role":
-        warrant_obj = WarrantObject.get("role", id, opts=opts)
+        warrant_obj = Object.get("role", id, opts=opts)
         return Role.from_warrant_obj(warrant_obj)
 
     @classmethod
     def create(cls, id: str = "", meta: Dict[str, Any] = {}, opts: Dict[str, Any] = {}) -> "Role":
-        warrant_obj = WarrantObject.create("role", id, meta, opts=opts)
+        warrant_obj = Object.create("role", id, meta, opts=opts)
         return Role.from_warrant_obj(warrant_obj)
 
     @classmethod
     def delete(cls, id: str, opts: Dict[str, Any] = {}) -> Optional[str]:
-        return WarrantObject.delete("role", id, opts=opts)
+        return Object.delete("role", id, opts=opts)
 
     """
     Users

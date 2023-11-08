@@ -1,16 +1,16 @@
-from warrant import APIResource, Subject, Warrant, WarrantObject, constants, ListResult
+from warrant import APIResource, Subject, Warrant, Object, constants, ListResult
 from typing import Any, Dict, List, Optional
 
 
-class Permission(WarrantObject):
+class Permission(Object):
     def __init__(self, id: str = "", meta: Dict[str, Any] = {}) -> None:
         self.id = id
-        WarrantObject.__init__(self, "permission", id, meta)
+        Object.__init__(self, "permission", id, meta)
 
     @classmethod
     def list(cls, list_params: Dict[str, Any] = {}, opts: Dict[str, Any] = {}):
         list_params['objectType'] = 'permission'
-        list_result = WarrantObject.list(list_params, opts=opts)
+        list_result = Object.list(list_params, opts=opts)
         permissions = map(lambda warrant_obj: Permission(warrant_obj.object_id, warrant_obj.meta), list_result.results)
         if list_result.prev_cursor != "" and list_result.next_cursor != "":
             return ListResult[Permission](list(permissions), list_result.prev_cursor, list_result.next_cursor)
@@ -23,17 +23,17 @@ class Permission(WarrantObject):
 
     @classmethod
     def get(cls, id: str, opts: Dict[str, Any] = {}) -> "Permission":
-        warrant_obj = WarrantObject.get("permission", id, opts=opts)
+        warrant_obj = Object.get("permission", id, opts=opts)
         return Permission.from_warrant_obj(warrant_obj)
 
     @classmethod
     def create(cls, id: str, meta={}, opts: Dict[str, Any] = {}) -> "Permission":
-        warrant_obj = WarrantObject.create("permission", id, meta, opts=opts)
+        warrant_obj = Object.create("permission", id, meta, opts=opts)
         return Permission.from_warrant_obj(warrant_obj)
 
     @classmethod
     def delete(cls, id: str, opts: Dict[str, Any] = {}) -> Optional[str]:
-        return WarrantObject.delete("permission", id, opts=opts)
+        return Object.delete("permission", id, opts=opts)
 
     """
     Users

@@ -1,16 +1,16 @@
-from warrant import APIResource, PricingTier, Feature, Role, Permission, Authz, Subject, Warrant, WarrantObject, constants, ListResult
+from warrant import APIResource, PricingTier, Feature, Role, Permission, Authz, Subject, Warrant, Object, constants, ListResult
 from typing import Any, Dict, List, Optional, Sequence
 
 
-class User(WarrantObject):
+class User(Object):
     def __init__(self, id: str = "", meta: Dict[str, Any] = {}) -> None:
         self.id = id
-        WarrantObject.__init__(self, "user", id, meta)
+        Object.__init__(self, "user", id, meta)
 
     @classmethod
     def list(cls, list_params: Dict[str, Any] = {}, opts: Dict[str, Any] = {}):
         list_params['objectType'] = 'user'
-        list_result = WarrantObject.list(list_params, opts=opts)
+        list_result = Object.list(list_params, opts=opts)
         users = map(lambda warrant_obj: User(warrant_obj.object_id, warrant_obj.meta), list_result.results)
         if list_result.prev_cursor != "" and list_result.next_cursor != "":
             return ListResult[User](list(users), list_result.prev_cursor, list_result.next_cursor)
@@ -36,29 +36,29 @@ class User(WarrantObject):
 
     @classmethod
     def get(cls, id: str, opts: Dict[str, Any] = {}) -> "User":
-        warrant_obj = WarrantObject.get("user", id, opts=opts)
+        warrant_obj = Object.get("user", id, opts=opts)
         return User.from_warrant_obj(warrant_obj)
 
     @classmethod
     def create(cls, id: str = "", meta: Dict[str, Any] = {}, opts: Dict[str, Any] = {}) -> "User":
-        warrant_obj = WarrantObject.create("user", id, meta, opts=opts)
+        warrant_obj = Object.create("user", id, meta, opts=opts)
         return User.from_warrant_obj(warrant_obj)
 
     @classmethod
     def batch_create(cls, users: List[Dict[str, Any]], opts: Dict[str, Any] = {}) -> List["User"]:
         objects = map(lambda user: {"objectType": "user", "objectId": user['userId'], "meta": user['meta']} if "meta" in user.keys() else {"objectType": "user", "objectId": user['userId']}, users)
-        created_objects = WarrantObject.batch_create(list(objects), opts)
+        created_objects = Object.batch_create(list(objects), opts)
         created_users = list(map(lambda warrant_obj: User(warrant_obj.object_id, warrant_obj.meta), created_objects))
         return created_users
 
     @classmethod
     def delete(cls, id: str, opts: Dict[str, Any] = {}) -> Optional[str]:
-        return WarrantObject.delete("user", id, opts=opts)
+        return Object.delete("user", id, opts=opts)
 
     @classmethod
     def batch_delete(cls, users: List[Dict[str, Any]], opts: Dict[str, Any] = {}) -> Optional[str]:
         objects = map(lambda user: {"objectType": "user", "objectId": user['userId']}, users)
-        return WarrantObject.batch_delete(list(objects), opts)
+        return Object.batch_delete(list(objects), opts)
 
     """
     Tenants

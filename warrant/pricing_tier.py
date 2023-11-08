@@ -1,16 +1,16 @@
-from warrant import APIResource, Feature, Subject, Warrant, WarrantObject, constants, ListResult
+from warrant import APIResource, Feature, Subject, Warrant, Object, constants, ListResult
 from typing import Any, Dict, List, Optional
 
 
-class PricingTier(WarrantObject):
+class PricingTier(Object):
     def __init__(self, id: str = "", meta: Dict[str, Any] = {}) -> None:
         self.id = id
-        WarrantObject.__init__(self, "pricing-tier", id, meta)
+        Object.__init__(self, "pricing-tier", id, meta)
 
     @classmethod
     def list(cls, list_params: Dict[str, Any] = {}, opts: Dict[str, Any] = {}):
         list_params['objectType'] = 'pricing-tier'
-        list_result = WarrantObject.list(list_params, opts=opts)
+        list_result = Object.list(list_params, opts=opts)
         pricing_tiers = map(lambda warrant_obj: PricingTier(warrant_obj.object_id, warrant_obj.meta), list_result.results)
         if list_result.prev_cursor != "" and list_result.next_cursor != "":
             return ListResult[PricingTier](list(pricing_tiers), list_result.prev_cursor, list_result.next_cursor)
@@ -23,17 +23,17 @@ class PricingTier(WarrantObject):
 
     @classmethod
     def get(cls, id: str, opts: Dict[str, Any] = {}) -> "PricingTier":
-        warrant_obj = WarrantObject.get("pricing-tier", id, opts=opts)
+        warrant_obj = Object.get("pricing-tier", id, opts=opts)
         return PricingTier.from_warrant_obj(warrant_obj)
 
     @classmethod
     def create(cls, id: str, meta: Dict[str, Any] = {}, opts: Dict[str, Any] = {}) -> "PricingTier":
-        warrant_obj = WarrantObject.create("pricing-tier", id, meta, opts=opts)
+        warrant_obj = Object.create("pricing-tier", id, meta, opts=opts)
         return PricingTier.from_warrant_obj(warrant_obj)
 
     @classmethod
     def delete(cls, id: str, opts: Dict[str, Any] = {}):
-        return WarrantObject.delete("pricing-tier", id, opts=opts)
+        return Object.delete("pricing-tier", id, opts=opts)
 
     """
     Features

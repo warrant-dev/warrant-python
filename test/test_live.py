@@ -221,46 +221,46 @@ class LiveTest(unittest.TestCase):
         self.assertEqual(len(features_list.results), 0)
 
     def test_crud_objects(self):
-        object1 = warrant.WarrantObject.create("document")
+        object1 = warrant.Object.create("document")
         self.assertEqual(object1.object_type, "document")
         self.assertIsNotNone(object1.object_id)
         self.assertEqual(object1.meta, {})
 
-        object2 = warrant.WarrantObject.create("folder", "planning")
-        refetched_object = warrant.WarrantObject.get(object2.object_type, object2.object_id, {"Warrant-Token": "latest"})
+        object2 = warrant.Object.create("folder", "planning")
+        refetched_object = warrant.Object.get(object2.object_type, object2.object_id, {"Warrant-Token": "latest"})
         self.assertEqual(object2.object_type, refetched_object.object_type)
         self.assertEqual(object2.object_id, refetched_object.object_id)
         self.assertEqual(object2.meta, refetched_object.meta)
 
         object2.update({"description": "Second document"})
-        refetched_object = warrant.WarrantObject.get(object2.object_type, object2.object_id, {"Warrant-Token": "latest"})
+        refetched_object = warrant.Object.get(object2.object_type, object2.object_id, {"Warrant-Token": "latest"})
         self.assertEqual(refetched_object.object_type, "folder")
         self.assertEqual(refetched_object.object_id, "planning")
         self.assertEqual(refetched_object.meta, {"description": "Second document"})
 
-        objects_list = warrant.WarrantObject.list({"sortBy": "createdAt", "limit": 10}, {"Warrant-Token": "latest"})
+        objects_list = warrant.Object.list({"sortBy": "createdAt", "limit": 10}, {"Warrant-Token": "latest"})
         self.assertEqual(len(objects_list.results), 2)
         self.assertEqual(objects_list.results[0].object_type, object1.object_type)
         self.assertEqual(objects_list.results[0].object_id, object1.object_id)
         self.assertEqual(objects_list.results[1].object_type, object2.object_type)
         self.assertEqual(objects_list.results[1].object_id, object2.object_id)
 
-        warrant_token = warrant.WarrantObject.delete(object1.object_type, object1.object_id)
+        warrant_token = warrant.Object.delete(object1.object_type, object1.object_id)
         self.assertIsNotNone(warrant_token)
-        warrant_token = warrant.WarrantObject.delete(object2.object_type, object2.object_id)
+        warrant_token = warrant.Object.delete(object2.object_type, object2.object_id)
         self.assertIsNotNone(warrant_token)
-        objects_list = warrant.WarrantObject.list({"sortBy": "createdAt", "limit": 10}, {"Warrant-Token": "latest"})
+        objects_list = warrant.Object.list({"sortBy": "createdAt", "limit": 10}, {"Warrant-Token": "latest"})
         self.assertEqual(len(objects_list.results), 0)
 
     def test_batch_create_delete_objects(self):
-        objects = warrant.WarrantObject.batch_create([
+        objects = warrant.Object.batch_create([
             {"objectType": "document", "objectId": "document-a"},
             {"objectType": "document", "objectId": "document-b"},
             {"objectType": "folder", "objectId": "resources", "meta": {"description": "Helpful documents"}}
         ])
         self.assertEqual(len(objects), 3)
 
-        objects_list = warrant.WarrantObject.list({"limit": 10}, {"Warrant-Token": "latest"})
+        objects_list = warrant.Object.list({"limit": 10}, {"Warrant-Token": "latest"})
         self.assertEqual(len(objects_list.results), 3)
         self.assertEqual(objects_list.results[0].object_type, "document")
         self.assertEqual(objects_list.results[0].object_id, "document-a")
@@ -270,12 +270,12 @@ class LiveTest(unittest.TestCase):
         self.assertEqual(objects_list.results[2].object_id, "resources")
         self.assertEqual(objects_list.results[2].meta, {"description": "Helpful documents"})
 
-        warrant.WarrantObject.batch_delete([
+        warrant.Object.batch_delete([
             {"objectType": "document", "objectId": "document-a"},
             {"objectType": "document", "objectId": "document-b"},
             {"objectType": "folder", "objectId": "resources", "meta": {"description": "Helpful documents"}}
         ])
-        objects_list = warrant.WarrantObject.list({"limit": 10}, {"Warrant-Token": "latest"})
+        objects_list = warrant.Object.list({"limit": 10}, {"Warrant-Token": "latest"})
         self.assertEqual(len(objects_list.results), 0)
 
     def test_multitenancy_example(self):
@@ -732,7 +732,7 @@ class LiveTest(unittest.TestCase):
             {"objectType": permission1.object_type, "objectId": permission1.id, "relation": "member", "subject": {"objectType": new_user.object_type, "objectId": new_user.id}},
             {"objectType": permission2.object_type, "objectId": permission2.id, "relation": "member", "subject": {"objectType": new_user.object_type, "objectId": new_user.id}}
         ])
-        warrant.WarrantObject.batch_delete([
+        warrant.Object.batch_delete([
             {"objectType": permission1.object_type, "objectId": permission1.id},
             {"objectType": permission2.object_type, "objectId": permission2.id},
             {"objectType": new_user.object_type, "objectId": new_user.id},
