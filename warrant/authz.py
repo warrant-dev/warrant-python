@@ -30,7 +30,7 @@ def map_warrant(warrant):
 
 class Authz(APIResource):
     @classmethod
-    def check(cls, object_type: str, object_id: str, relation: str, subject, context: Dict[str, Any] = {}, opts: Dict[str, Any] = {}) -> bool:
+    def check(cls, object_type: str, object_id: str, relation: str, subject: Subject | Dict[str, Any], context: Dict[str, Any] = {}, opts: Dict[str, Any] = {}) -> bool:
         warrantToCheck = {
             "objectType": object_type,
             "objectId": object_id,
