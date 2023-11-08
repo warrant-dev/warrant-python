@@ -20,7 +20,7 @@ class Subject(object):
 
 
 class QueryResult:
-    def __init__(self, object_type: str, object_id: str, warrant: Dict[str, Any], is_implicit: bool, meta: Dict[str, Any] = {}):
+    def __init__(self, object_type: str, object_id: str, warrant: "Warrant", is_implicit: bool, meta: Dict[str, Any] = {}):
         self.object_type = object_type
         self.object_id = object_id
         self.warrant = warrant
@@ -29,12 +29,18 @@ class QueryResult:
 
     @staticmethod
     def from_json(obj):
-        print(f"queryResult obj: {obj}")
-        if "objectType" in obj and "objectId" and "warrant" in obj:
+        if "warrant" in obj:
             if "meta" in obj:
                 return QueryResult(obj["objectType"], obj["objectId"], obj["warrant"], obj["isImplicit"], obj["meta"])
             else:
                 return QueryResult(obj["objectType"], obj["objectId"], obj["warrant"], obj["isImplicit"])
+        elif "subject" in obj:
+            return Warrant(obj)
+        elif "objectType" in obj and "objectId" in obj:
+            relation = ""
+            if "relation" in obj.keys():
+                relation = obj["relation"]
+            return Subject(obj["objectType"], obj["objectId"], relation)
         else:
             return obj
 
@@ -51,7 +57,8 @@ class Warrant(APIResource):
         self.object_id = obj["objectId"]
         self.relation = obj["relation"]
         self.subject = obj["subject"]
-        self.warrant_token = obj["warrantToken"]
+        if "warrantToken" in obj:
+            self.warrant_token = obj["warrantToken"]
 
     @classmethod
     def create(cls, object_type, object_id, relation, subject, policy="", opts: Dict[str, Any] = {}) -> "Warrant":
