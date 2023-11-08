@@ -684,10 +684,11 @@ class LiveTest(unittest.TestCase):
         )
         self.assertEqual(user_has_permission2, False)
 
+        perm1_warrant = warrant.Warrant({"objectType": "permission", "objectId": permission1.id, "relation": "member", "subject": warrant.Subject("user", new_user.id)})
         user_has_permissions = warrant.Authz.check_many(
             warrant.CheckOp.ALL_OF,
             [
-                {"objectType": permission1.object_type, "objectId": permission1.id, "relation": "member", "subject": {"objectType": new_user.object_type, "objectId": new_user.id}},
+                perm1_warrant,
                 {"objectType": permission2.object_type, "objectId": permission2.id, "relation": "member", "subject": {"objectType": new_user.object_type, "objectId": new_user.id}}
             ],
             opts={"Warrant-Token": "latest"}
@@ -721,7 +722,7 @@ class LiveTest(unittest.TestCase):
         user_has_permissions = warrant.Authz.check_many(
             warrant.CheckOp.ALL_OF,
             [
-                {"objectType": permission1.object_type, "objectId": permission1.id, "relation": "member", "subject": {"objectType": new_user.object_type, "objectId": new_user.id}},
+                perm1_warrant,
                 {"objectType": permission2.object_type, "objectId": permission2.id, "relation": "member", "subject": {"objectType": new_user.object_type, "objectId": new_user.id}}
             ],
             opts={"Warrant-Token": "latest"}

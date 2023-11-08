@@ -1,5 +1,5 @@
 import warrant
-from warrant import APIResource, Subject
+from warrant import APIResource, Subject, Warrant
 from enum import Enum
 from typing import Any, Dict, List
 
@@ -7,6 +7,25 @@ from typing import Any, Dict, List
 class CheckOp(str, Enum):
     ANY_OF = "anyOf"
     ALL_OF = "allOf"
+
+
+def map_warrant(warrant):
+    if isinstance(warrant, Warrant):
+        subject = {
+            "objectType": warrant.subject.object_type,
+            "objectId": warrant.subject.object_id
+        }
+        if warrant.subject.relation != "":
+            subject["relation"] = warrant.subject.relation
+
+        return {
+            "objectType": warrant.object_type,
+            "objectId": warrant.object_id,
+            "relation": warrant.relation,
+            "subject": subject
+        }
+    else:
+        return warrant
 
 
 class Authz(APIResource):
@@ -38,10 +57,11 @@ class Authz(APIResource):
         return False
 
     @classmethod
-    def check_many(cls, op: CheckOp, warrants: List[Dict[str, Any]], opts: Dict[str, Any] = {}):
+    def check_many(cls, op: CheckOp, warrants: List[Dict[str, Any] | Warrant], opts: Dict[str, Any] = {}):
+        mapped_warrants = list(map(map_warrant, warrants))
         payload = {
             "op": op,
-            "warrants": warrants
+            "warrants": mapped_warrants
         }
         json_resp = cls._post(uri="/v2/check", json_payload=payload, opts=opts)
         code = json_resp["code"]
