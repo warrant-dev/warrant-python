@@ -293,7 +293,7 @@ class LiveTest(unittest.TestCase):
         self.assertEqual(len(tenant1_users_list.results), 0)
 
         # Assign user1 -> tenant1
-        tenant1.assign_user(user1.id, "member")
+        tenant1.assign_user(user1.id)
 
         user1_tenants_list = warrant.Tenant.list_for_user(user1.id, {"limit": 100}, {"Warrant-Token": "latest"})
         self.assertEqual(len(user1_tenants_list.results), 1)
@@ -306,7 +306,7 @@ class LiveTest(unittest.TestCase):
         self.assertEqual(tenant1_users_list.results[0].meta, {})
 
         # Remove user1 -> tenant1
-        tenant1.remove_user(user1.id, "member")
+        tenant1.remove_user(user1.id)
 
         user1_tenants_list = warrant.Tenant.list_for_user(user1.id, {"limit": 100}, {"Warrant-Token": "latest"})
         self.assertEqual(len(user1_tenants_list.results), 0)
@@ -346,8 +346,8 @@ class LiveTest(unittest.TestCase):
         self.assertEqual(admin_user_has_permission, False)
 
         # Assign 'create-report' -> admin role -> admin user
-        admin_role.assign_permission(create_permission.id, "member")
-        admin_user.assign_role(admin_role.id, "member")
+        admin_role.assign_permission(create_permission.id)
+        admin_user.assign_role(admin_role.id)
 
         admin_user_has_permission = admin_user.has_permission(create_permission.id, {"Warrant-Token": "latest"})
         self.assertEqual(admin_user_has_permission, True)
@@ -363,8 +363,8 @@ class LiveTest(unittest.TestCase):
         self.assertEqual(admin_role_permissions_list.results[0].meta, {"name": "Create Report", "description": "Permission to create reports"})
 
         # Remove 'create-report' -> admin role -> admin user
-        admin_role.remove_permission(create_permission.id, "member")
-        admin_user.remove_role(admin_role.id, "member")
+        admin_role.remove_permission(create_permission.id)
+        admin_user.remove_role(admin_role.id)
 
         admin_user_has_permission = admin_user.has_permission(create_permission.id, {"Warrant-Token": "latest"})
         self.assertEqual(admin_user_has_permission, False)
@@ -382,7 +382,7 @@ class LiveTest(unittest.TestCase):
         viewer_user_permissions_list = warrant.Permission.list_for_user(viewer_user.id, {"limit": 100}, {"Warrant-Token": "latest"})
         self.assertEqual(len(viewer_user_permissions_list.results), 0)
 
-        viewer_user.assign_permission(view_permission.id, "member")
+        viewer_user.assign_permission(view_permission.id)
 
         viewer_user_has_permission = viewer_user.has_permission(view_permission.id, {"Warrant-Token": "latest"})
         self.assertEqual(viewer_user_has_permission, True)
@@ -392,7 +392,7 @@ class LiveTest(unittest.TestCase):
         self.assertEqual(viewer_user_permissions_list.results[0].object_id, view_permission.id)
         self.assertEqual(viewer_user_permissions_list.results[0].meta, {"name": "View Report", "description": "Permission to view reports"})
 
-        viewer_user.remove_permission(view_permission.id, "member")
+        viewer_user.remove_permission(view_permission.id)
 
         viewer_user_has_permission = viewer_user.has_permission(view_permission.id, {"Warrant-Token": "latest"})
         self.assertEqual(viewer_user_has_permission, False)
@@ -435,7 +435,7 @@ class LiveTest(unittest.TestCase):
         paid_user_features_list = warrant.Feature.list_for_user(paid_user.id, {"limit": 100}, {"Warrant-Token": "latest"})
         self.assertEqual(len(paid_user_features_list.results), 0)
 
-        paid_user.assign_feature(custom_feature.id, "member")
+        paid_user.assign_feature(custom_feature.id)
 
         paid_user_has_feature = paid_user.has_feature(custom_feature.id, {"Warrant-Token": "latest"})
         self.assertEqual(paid_user_has_feature, True)
@@ -445,7 +445,7 @@ class LiveTest(unittest.TestCase):
         self.assertEqual(paid_user_features_list.results[0].object_id, "custom-feature")
         self.assertEqual(paid_user_features_list.results[0].meta, {"name": "Custom Feature"})
 
-        paid_user.remove_feature(custom_feature.id, "member")
+        paid_user.remove_feature(custom_feature.id)
 
         paid_user_has_feature = paid_user.has_feature(custom_feature.id, {"Warrant-Token": "latest"})
         self.assertEqual(paid_user_has_feature, False)
@@ -463,8 +463,8 @@ class LiveTest(unittest.TestCase):
         free_user_tiers_list = warrant.PricingTier.list_for_user(free_user.id, {"limit": 100}, {"Warrant-Token": "latest"})
         self.assertEqual(len(free_user_tiers_list.results), 0)
 
-        free_tier.assign_feature(feature1.id, "member")
-        free_user.assign_pricing_tier(free_tier.id, "member")
+        free_tier.assign_feature(feature1.id)
+        free_user.assign_pricing_tier(free_tier.id)
 
         free_user_has_feature = free_user.has_feature(feature1.id, {"Warrant-Token": "latest"})
         self.assertEqual(free_user_has_feature, True)
@@ -479,8 +479,8 @@ class LiveTest(unittest.TestCase):
         self.assertEqual(free_user_tiers_list.results[0].object_id, "free")
         self.assertEqual(free_user_tiers_list.results[0].meta, {"name": "Free Tier"})
 
-        free_tier.remove_feature(feature1.id, "member")
-        free_user.remove_pricing_tier(free_tier.id, "member")
+        free_tier.remove_feature(feature1.id)
+        free_user.remove_pricing_tier(free_tier.id)
 
         free_user_has_feature = free_user.has_feature(feature1.id, {"Warrant-Token": "latest"})
         self.assertEqual(free_user_has_feature, False)
@@ -528,7 +528,7 @@ class LiveTest(unittest.TestCase):
         paid_tenant_features_list = paid_tenant.list_features({"limit": 100}, {"Warrant-Token": "latest"})
         self.assertEqual(len(paid_tenant_features_list.results), 0)
 
-        paid_tenant.assign_feature(custom_feature.id, "member")
+        paid_tenant.assign_feature(custom_feature.id)
 
         paid_tenant_has_feature = paid_tenant.has_feature(custom_feature.id, {"Warrant-Token": "latest"})
         self.assertEqual(paid_tenant_has_feature, True)
@@ -538,7 +538,7 @@ class LiveTest(unittest.TestCase):
         self.assertEqual(paid_tenant_features_list.results[0].object_id, "custom-feature")
         self.assertEqual(paid_tenant_features_list.results[0].meta, {"name": "Custom Feature"})
 
-        paid_tenant.remove_feature(custom_feature.id, "member")
+        paid_tenant.remove_feature(custom_feature.id)
 
         paid_tenant_has_feature = paid_tenant.has_feature(custom_feature.id, {"Warrant-Token": "latest"})
         self.assertEqual(paid_tenant_has_feature, False)
@@ -556,8 +556,8 @@ class LiveTest(unittest.TestCase):
         free_tenant_tiers_list = free_tenant.list_pricing_tiers({"limit": 100}, {"Warrant-Token": "latest"})
         self.assertEqual(len(free_tenant_tiers_list.results), 0)
 
-        free_tier.assign_feature(feature1.id, "member")
-        free_tenant.assign_pricing_tier(free_tier.id, "member")
+        free_tier.assign_feature(feature1.id)
+        free_tenant.assign_pricing_tier(free_tier.id)
 
         free_tenant_has_feature = free_tenant.has_feature(feature1.id, {"Warrant-Token": "latest"})
         self.assertEqual(free_tenant_has_feature, True)
@@ -572,8 +572,8 @@ class LiveTest(unittest.TestCase):
         self.assertEqual(free_tenant_tiers_list.results[0].object_id, "free")
         self.assertEqual(free_tenant_tiers_list.results[0].meta, {"name": "Free Tier"})
 
-        free_tier.remove_feature(feature1.id, "member")
-        free_tenant.remove_pricing_tier(free_tier.id, "member")
+        free_tier.remove_feature(feature1.id)
+        free_tenant.remove_pricing_tier(free_tier.id)
 
         free_tenant_has_feature = free_tenant.has_feature(feature1.id, {"Warrant-Token": "latest"})
         self.assertEqual(free_tenant_has_feature, False)

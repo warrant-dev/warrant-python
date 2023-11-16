@@ -69,10 +69,10 @@ class Tenant(Object):
     def list_users(self, list_params: Dict[str, Any] = {}, opts: Dict[str, Any] = {}) -> ListResult["User"]:
         return User.list_for_tenant(self.id, list_params, opts=opts)
 
-    def assign_user(self, user_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def assign_user(self, user_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         User.assign_to_tenant(self.id, user_id, relation, opts=opts)
 
-    def remove_user(self, user_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def remove_user(self, user_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         User.remove_from_tenant(self.id, user_id, relation, opts=opts)
 
     """
@@ -81,10 +81,10 @@ class Tenant(Object):
     def list_pricing_tiers(self, list_params: Dict[str, Any] = {}, opts: Dict[str, Any] = {}):
         return PricingTier.list_for_tenant(self.id, list_params, opts=opts)
 
-    def assign_pricing_tier(self, pricing_tier_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def assign_pricing_tier(self, pricing_tier_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         PricingTier.assign_to_tenant(self.id, pricing_tier_id, relation, opts=opts)
 
-    def remove_pricing_tier(self, pricing_tier_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def remove_pricing_tier(self, pricing_tier_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         PricingTier.remove_from_tenant(self.id, pricing_tier_id, relation, opts=opts)
 
     """
@@ -93,10 +93,10 @@ class Tenant(Object):
     def list_features(self, list_params: Dict[str, Any] = {}, opts: Dict[str, Any] = {}):
         return Feature.list_for_tenant(self.id, list_params, opts=opts)
 
-    def assign_feature(self, feature_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def assign_feature(self, feature_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         Feature.assign_to_tenant(self.id, feature_id, relation, opts=opts)
 
-    def remove_feature(self, feature_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def remove_feature(self, feature_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         Feature.remove_from_tenant(self.id, feature_id, relation, opts=opts)
 
     def has_feature(self, feature_id: str, opts: Dict[str, Any] = {}):

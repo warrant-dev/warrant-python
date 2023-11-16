@@ -64,12 +64,12 @@ class User(Object):
     Tenants
     """
     @classmethod
-    def assign_to_tenant(cls, tenant_id: str, user_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def assign_to_tenant(cls, tenant_id: str, user_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
         return Warrant.create(constants.TENANT_OBJECT_TYPE, tenant_id, relation, user_subject, opts=opts)
 
     @classmethod
-    def remove_from_tenant(cls, tenant_id: str, user_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def remove_from_tenant(cls, tenant_id: str, user_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
         return Warrant.delete(constants.TENANT_OBJECT_TYPE, tenant_id, relation, user_subject, opts=opts)
 
@@ -79,10 +79,10 @@ class User(Object):
     def list_roles(self, list_params: Dict[str, Any] = {}, opts: Dict[str, Any] = {}):
         return Role.list_for_user(self.id, list_params, opts=opts)
 
-    def assign_role(self, role_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def assign_role(self, role_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         Role.assign_to_user(self.id, role_id, relation, opts=opts)
 
-    def remove_role(self, role_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def remove_role(self, role_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         Role.remove_from_user(self.id, role_id, relation, opts=opts)
 
     """
@@ -91,10 +91,10 @@ class User(Object):
     def list_permissions(self, list_params: Dict[str, Any] = {}, opts: Dict[str, Any] = {}):
         return Permission.list_for_user(self.id, list_params, opts=opts)
 
-    def assign_permission(self, permission_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def assign_permission(self, permission_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         Permission.assign_to_user(self.id, permission_id, relation, opts=opts)
 
-    def remove_permission(self, permission_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def remove_permission(self, permission_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         Permission.remove_from_user(self.id, permission_id, relation, opts=opts)
 
     def has_permission(self, permission_id: str, opts: Dict[str, Any] = {}):
@@ -106,10 +106,10 @@ class User(Object):
     def list_pricing_tiers(self, list_params: Dict[str, Any] = {}, opts: Dict[str, Any] = {}):
         return PricingTier.list_for_user(self.id, list_params, opts=opts)
 
-    def assign_pricing_tier(self, pricing_tier_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def assign_pricing_tier(self, pricing_tier_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         PricingTier.assign_to_user(self.id, pricing_tier_id, relation, opts=opts)
 
-    def remove_pricing_tier(self, pricing_tier_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def remove_pricing_tier(self, pricing_tier_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         PricingTier.remove_from_user(self.id, pricing_tier_id, relation, opts=opts)
 
     """
@@ -118,10 +118,10 @@ class User(Object):
     def list_features(self, list_params={}, opts: Dict[str, Any] = {}):
         return Feature.list_for_user(self.id, list_params, opts=opts)
 
-    def assign_feature(self, feature_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def assign_feature(self, feature_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         Feature.assign_to_user(self.id, feature_id, relation, opts=opts)
 
-    def remove_feature(self, feature_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def remove_feature(self, feature_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         Feature.remove_from_user(self.id, feature_id, relation, opts=opts)
 
     def has_feature(self, feature_id: str, opts: Dict[str, Any] = {}):

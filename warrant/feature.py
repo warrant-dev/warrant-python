@@ -52,12 +52,12 @@ class Feature(Object):
             return ListResult[Feature](list(features))
 
     @classmethod
-    def assign_to_pricing_tier(cls, pricing_tier_id: str, feature_id: str, relation, opts: Dict[str, Any] = {}):
+    def assign_to_pricing_tier(cls, pricing_tier_id: str, feature_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         pricing_tier_subject = Subject(constants.PRICING_TIER_OBJECT_TYPE, pricing_tier_id)
         return Warrant.create(constants.FEATURE_OBJECT_TYPE, feature_id, relation, pricing_tier_subject, opts=opts)
 
     @classmethod
-    def remove_from_pricing_tier(cls, pricing_tier_id: str, feature_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def remove_from_pricing_tier(cls, pricing_tier_id: str, feature_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         pricing_tier_subject = Subject(constants.PRICING_TIER_OBJECT_TYPE, pricing_tier_id)
         return Warrant.delete(constants.FEATURE_OBJECT_TYPE, feature_id, relation, pricing_tier_subject, opts=opts)
 
@@ -78,12 +78,12 @@ class Feature(Object):
             return ListResult[Feature](list(features))
 
     @classmethod
-    def assign_to_tenant(cls, tenant_id: str, feature_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def assign_to_tenant(cls, tenant_id: str, feature_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         tenant_subject = Subject(constants.TENANT_OBJECT_TYPE, tenant_id)
         return Warrant.create(constants.FEATURE_OBJECT_TYPE, feature_id, relation, tenant_subject, opts=opts)
 
     @classmethod
-    def remove_from_tenant(cls, tenant_id: str, feature_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def remove_from_tenant(cls, tenant_id: str, feature_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         tenant_subject = Subject(constants.TENANT_OBJECT_TYPE, tenant_id)
         return Warrant.delete(constants.FEATURE_OBJECT_TYPE, feature_id, relation, tenant_subject, opts=opts)
 
@@ -104,12 +104,12 @@ class Feature(Object):
             return ListResult[Feature](list(features))
 
     @classmethod
-    def assign_to_user(cls, user_id: str, feature_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def assign_to_user(cls, user_id: str, feature_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
         return Warrant.create(constants.FEATURE_OBJECT_TYPE, feature_id, relation, user_subject, opts=opts)
 
     @classmethod
-    def remove_from_user(cls, user_id: str, feature_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def remove_from_user(cls, user_id: str, feature_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
         return Warrant.delete(constants.FEATURE_OBJECT_TYPE, feature_id, relation, user_subject, opts=opts)
 

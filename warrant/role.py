@@ -52,12 +52,12 @@ class Role(Object):
             return ListResult[Role](list(roles))
 
     @classmethod
-    def assign_to_user(cls, user_id: str, role_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def assign_to_user(cls, user_id: str, role_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
         return Warrant.create(constants.ROLE_OBJECT_TYPE, role_id, relation, user_subject, opts=opts)
 
     @classmethod
-    def remove_from_user(cls, user_id: str, role_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def remove_from_user(cls, user_id: str, role_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         user_subject = Subject(constants.USER_OBJECT_TYPE, user_id)
         return Warrant.delete(constants.ROLE_OBJECT_TYPE, role_id, relation, user_subject, opts=opts)
 
@@ -67,10 +67,10 @@ class Role(Object):
     def list_permissions(self, list_params: Dict[str, Any] = {}, opts: Dict[str, Any] = {}) -> ListResult["Permission"]:
         return Permission.list_for_role(self.id, list_params, opts=opts)
 
-    def assign_permission(self, permission_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def assign_permission(self, permission_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         Permission.assign_to_role(self.id, permission_id, relation, opts=opts)
 
-    def remove_permission(self, permission_id: str, relation: str, opts: Dict[str, Any] = {}):
+    def remove_permission(self, permission_id: str, relation: str = "member", opts: Dict[str, Any] = {}):
         Permission.remove_from_role(self.id, permission_id, relation, opts=opts)
 
     """
