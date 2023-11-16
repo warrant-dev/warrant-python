@@ -6,7 +6,7 @@ README = (DIR / "README.md").read_text()
 
 setup(
     name="warrant-python",
-    version="3.0.0",
+    version="3.1.0",
     description="Python SDK for Warrant",
     long_description=README,
     long_description_content_type="text/markdown",
